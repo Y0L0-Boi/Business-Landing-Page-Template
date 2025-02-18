@@ -67,7 +67,7 @@ export default function NewGoal() {
 
       if (!response.ok) {
         if (response.status === 401) {
-          window.location.href = '/auth';
+          alert("Please log in again to continue");
           return;
         }
         throw new Error("Portfolio optimization failed");
