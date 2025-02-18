@@ -35,7 +35,8 @@ export function setupAuth(app: Express) {
     saveUninitialized: false,
     cookie: {
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      sameSite: "lax", // Updated for better session persistence
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days session
     }
   };
 

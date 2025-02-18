@@ -2,10 +2,18 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { setupAuth } from "./auth";
+import cookieParser from "cookie-parser"; // Added cookie-parser import
 
 const app = express();
+app.use(cookieParser()); // Added cookie-parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*'); //Added to handle different origins
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 
 app.use((req, res, next) => {
   const start = Date.now();
