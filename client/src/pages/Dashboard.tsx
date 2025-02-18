@@ -39,8 +39,19 @@ type PortfolioSummary = {
 export default function Dashboard() {
   const [, setLocation] = useLocation();
 
+  // For demonstration, using static data
   const { data: clients, isLoading: isLoadingClients } = useQuery<ClientWithPortfolio[]>({
     queryKey: ["/api/clients"],
+    queryFn: () => Promise.resolve([{
+      id: 1,
+      name: "Ramesh Kumar",
+      email: "ramesh@example.com",
+      phone: "+91 98765 43212",
+      panNumber: "LMNOP7890Q",
+      kycStatus: true,
+      portfolioValue: 6700000,
+      fundCount: 6
+    }])
   });
 
   const { data: portfolioSummary, isLoading: isLoadingSummary } = useQuery<PortfolioSummary>({

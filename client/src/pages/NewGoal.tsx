@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { useParams } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { ArrowLeft, Target } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -21,12 +21,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Target, ArrowLeft } from "lucide-react";
 
 const newGoalSchema = z.object({
   goalName: z.string().min(1, "Goal name is required"),
   targetAmount: z.string().min(1, "Target amount is required"),
-  sipAmount: z.string().min(1, "SIP amount is required"),
+  sipAmount: z.string().min(1, "Monthly SIP amount is required"),
   riskAppetite: z.string().min(1, "Risk appetite is required"),
   timeFrame: z.string().min(1, "Time frame is required"),
   initialInvestment: z.string().min(1, "Initial investment is required"),
@@ -36,8 +35,6 @@ type NewGoalFormData = z.infer<typeof newGoalSchema>;
 
 export default function NewGoal() {
   const { id } = useParams();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const form = useForm<NewGoalFormData>({
     resolver: zodResolver(newGoalSchema),
     defaultValues: {
@@ -51,16 +48,11 @@ export default function NewGoal() {
   });
 
   const onSubmit = async (data: NewGoalFormData) => {
-    setIsSubmitting(true);
     try {
-      // In a real app, this would make an API call
       console.log("Submitting new goal:", data);
-      // Redirect back to client dashboard
       window.location.href = `/clients/${id}`;
     } catch (error) {
       console.error("Error creating goal:", error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -88,13 +80,9 @@ export default function NewGoal() {
               name="goalName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-200">Goal Name</FormLabel>
+                  <FormLabel className="text-white">Goal Name</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white/10 border-blue-900/50 text-white"
-                      placeholder="e.g., Retirement, Child's Education"
-                    />
+                    <Input placeholder="e.g. Retirement" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -106,14 +94,23 @@ export default function NewGoal() {
               name="targetAmount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-200">Target Amount</FormLabel>
+                  <FormLabel className="text-white">Target Amount (₹)</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      type="number"
-                      className="bg-white/10 border-blue-900/50 text-white"
-                      placeholder="Enter target amount"
-                    />
+                    <Input type="number" placeholder="e.g. 10000000" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="timeFrame"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white">Time Frame (Years)</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="e.g. 20" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -125,14 +122,23 @@ export default function NewGoal() {
               name="sipAmount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-200">Monthly SIP Amount</FormLabel>
+                  <FormLabel className="text-white">Monthly SIP Amount (₹)</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      type="number"
-                      className="bg-white/10 border-blue-900/50 text-white"
-                      placeholder="Enter monthly SIP amount"
-                    />
+                    <Input type="number" placeholder="e.g. 25000" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="initialInvestment"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white">Initial Investment (₹)</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="e.g. 100000" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -144,11 +150,11 @@ export default function NewGoal() {
               name="riskAppetite"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-200">Risk Appetite</FormLabel>
+                  <FormLabel className="text-white">Risk Appetite</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger className="bg-white/10 border-blue-900/50 text-white">
-                        <SelectValue placeholder="Select risk appetite" />
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select risk level" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -162,55 +168,7 @@ export default function NewGoal() {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="timeFrame"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-200">Time Frame (Years)</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="number"
-                      className="bg-white/10 border-blue-900/50 text-white"
-                      placeholder="Enter investment duration"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="initialInvestment"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-200">Initial Investment</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="number"
-                      className="bg-white/10 border-blue-900/50 text-white"
-                      placeholder="Enter initial investment amount"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button
-              type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <><Target className="mr-2 h-4 w-4 animate-spin" /> Creating Goal...</>
-              ) : (
-                <>Create Goal</>
-              )}
-            </Button>
+            <Button type="submit" className="w-full">Create Goal</Button>
           </form>
         </Form>
       </Card>
