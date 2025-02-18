@@ -37,8 +37,15 @@ type OptimizationResult = {
 
 export default function NewGoal() {
   const { id } = useParams();
+  const [, setLocation] = useLocation();
+  const { user } = useAuth();
   const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
   const [isOptimizing, setIsOptimizing] = useState(false);
+
+  if (!user) {
+    setLocation('/auth');
+    return null;
+  }
 
   const form = useForm<NewGoalFormData>({
     resolver: zodResolver(newGoalSchema),
