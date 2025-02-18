@@ -91,10 +91,11 @@ function useRegisterMutation() {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { data: user, error, isLoading } = useQuery<SelectUser>({
     queryKey: ["/api/user"],
-    retry: 1,
-    refetchOnWindowFocus: true,
-    staleTime: 0,
-    cacheTime: 5 * 60 * 1000,
+    retry: 2,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 30000,
+    cacheTime: 60000,
   });
 
   const loginMutation = useLoginMutation();
