@@ -8,9 +8,6 @@ const app = express();
 app.set('trust proxy', 1);
 app.use(cookieParser());
 app.use(express.json());
-
-const app = express();
-app.use(cookieParser()); // Added cookie-parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(function(req, res, next) {
