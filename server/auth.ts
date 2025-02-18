@@ -31,11 +31,11 @@ async function comparePasswords(supplied: string, stored: string) {
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
     secret: "your-secret-key",  // In production this should be an environment variable
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     cookie: {
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax", // Updated for better session persistence
+      secure: false,
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days session
     }
   };
