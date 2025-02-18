@@ -1,28 +1,38 @@
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Card } from "@/components/ui/card";
-import { Settings2, LineChart, Users, Shield } from "lucide-react";
+import { TrendingUp, PieChart, Users, Shield, FileText, Clock } from "lucide-react";
 
 const features = [
   {
-    icon: Settings2,
-    title: "Powerful Automation",
-    description: "Streamline your workflow with intelligent automation tools"
+    icon: TrendingUp,
+    title: "Portfolio Management",
+    description: "Track and manage your clients' mutual fund portfolios in real-time"
   },
   {
-    icon: LineChart,
+    icon: PieChart,
     title: "Advanced Analytics",
-    description: "Get deep insights with real-time data visualization"
+    description: "Get detailed insights into AUM, commissions, and performance metrics"
   },
   {
     icon: Users,
-    title: "Team Collaboration",
-    description: "Work seamlessly with your team in real-time"
+    title: "Client Management",
+    description: "Efficiently manage client relationships and documents in one place"
   },
   {
     icon: Shield,
-    title: "Enterprise Security",
-    description: "Bank-grade security to protect your sensitive data"
+    title: "Regulatory Compliance",
+    description: "Stay compliant with SEBI regulations and documentation requirements"
+  },
+  {
+    icon: FileText,
+    title: "Digital Onboarding",
+    description: "Paperless client onboarding with eKYC integration"
+  },
+  {
+    icon: Clock,
+    title: "Real-time Tracking",
+    description: "Monitor transactions and NAV updates in real-time"
   }
 ];
 
@@ -33,9 +43,23 @@ export default function Features() {
   });
 
   return (
-    <section ref={ref} className="py-24 bg-black">
+    <section ref={ref} className="py-24 bg-gradient-to-b from-black to-blue-900">
       <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Everything You Need to <span className="text-blue-400">Succeed</span>
+          </h2>
+          <p className="text-gray-300 text-lg">
+            Comprehensive tools designed specifically for mutual fund distributors
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <motion.div
               key={index}
@@ -43,12 +67,12 @@ export default function Features() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="p-6 bg-gray-900/50 backdrop-blur-lg border-gray-800 hover:bg-gray-900/70 transition-all duration-300">
-                <feature.icon className="w-12 h-12 text-white mb-4" />
+              <Card className="p-6 bg-white/5 backdrop-blur-lg border-blue-900/50 hover:bg-white/10 transition-all duration-300">
+                <feature.icon className="w-12 h-12 text-blue-400 mb-4" />
                 <h3 className="text-xl font-semibold text-white mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-gray-400">
+                <p className="text-gray-300">
                   {feature.description}
                 </p>
               </Card>

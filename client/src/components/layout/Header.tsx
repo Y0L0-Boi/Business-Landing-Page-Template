@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { LogIn } from "lucide-react";
 
 export default function Header() {
   const { scrollY } = useScroll();
   const backgroundColor = useTransform(
     scrollY,
     [0, 100],
-    ["rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 0.8)"]
+    ["rgba(0, 0, 0, 0)", "rgba(0, 30, 60, 0.95)"]
   );
   const [isScrolled, setIsScrolled] = useState(false);
   const [location] = useLocation();
@@ -33,37 +34,42 @@ export default function Header() {
       <div className="container mx-auto px-6 flex items-center justify-between">
         <Link href="/">
           <span className="text-2xl font-bold text-white cursor-pointer">
-            SaaS<span className="text-primary">Hub</span>
+            MF<span className="text-blue-400">Hub</span>
           </span>
         </Link>
 
         <nav className="hidden md:flex items-center space-x-8">
-          <Link href="/resources">
+          <Link href="/features">
             <span className={`cursor-pointer transition-colors ${
-              isActive("/resources") ? "text-white" : "text-gray-300 hover:text-white"
+              isActive("/features") ? "text-blue-400" : "text-gray-300 hover:text-white"
             }`}>
-              Resources
+              Features
             </span>
           </Link>
           <Link href="/pricing">
             <span className={`cursor-pointer transition-colors ${
-              isActive("/pricing") ? "text-white" : "text-gray-300 hover:text-white"
+              isActive("/pricing") ? "text-blue-400" : "text-gray-300 hover:text-white"
             }`}>
               Pricing
             </span>
           </Link>
-          <Link href="/blog">
+          <Link href="/resources">
             <span className={`cursor-pointer transition-colors ${
-              isActive("/blog") ? "text-white" : "text-gray-300 hover:text-white"
+              isActive("/resources") ? "text-blue-400" : "text-gray-300 hover:text-white"
             }`}>
-              Blog
+              Resources
             </span>
           </Link>
         </nav>
 
-        <Button variant="secondary" className="bg-white text-black hover:bg-gray-100">
-          Get Started
-        </Button>
+        <div className="flex items-center space-x-4">
+          <Button variant="ghost" className="text-white hover:text-blue-400">
+            Register
+          </Button>
+          <Button className="bg-blue-500 text-white hover:bg-blue-600">
+            <LogIn className="mr-2 h-4 w-4" /> Login
+          </Button>
+        </div>
       </div>
     </motion.header>
   );
