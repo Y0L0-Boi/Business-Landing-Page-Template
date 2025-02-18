@@ -88,7 +88,7 @@ export default function ClientDashboard() {
         </div>
         <Button 
           className="bg-blue-500 hover:bg-blue-600"
-          onClick={() => (window.location.href = `/clients/${id}/goals/new`)}
+          onClick={() => setLocation(`/clients/${id}/goals/new`)}
         >
           <Plus className="mr-2 h-4 w-4" />
           Create New Goal
