@@ -22,8 +22,6 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const isActive = (path: string) => location === path;
-
   return (
     <motion.header
       style={{ backgroundColor }}
@@ -37,30 +35,6 @@ export default function Header() {
             MF<span className="text-blue-400">Hub</span>
           </span>
         </Link>
-
-        <nav className="hidden md:flex items-center space-x-8">
-          <Link href="/features">
-            <span className={`cursor-pointer transition-colors ${
-              isActive("/features") ? "text-blue-400" : "text-gray-300 hover:text-white"
-            }`}>
-              Features
-            </span>
-          </Link>
-          <Link href="/pricing">
-            <span className={`cursor-pointer transition-colors ${
-              isActive("/pricing") ? "text-blue-400" : "text-gray-300 hover:text-white"
-            }`}>
-              Pricing
-            </span>
-          </Link>
-          <Link href="/resources">
-            <span className={`cursor-pointer transition-colors ${
-              isActive("/resources") ? "text-blue-400" : "text-gray-300 hover:text-white"
-            }`}>
-              Resources
-            </span>
-          </Link>
-        </nav>
 
         <div className="flex items-center space-x-4">
           <Button variant="ghost" className="text-white hover:text-blue-400">
