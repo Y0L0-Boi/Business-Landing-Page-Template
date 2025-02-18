@@ -1,5 +1,5 @@
 
-import { useParams } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Target } from "lucide-react";
