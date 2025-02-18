@@ -56,9 +56,9 @@ export default function NewGoal() {
       const response = await fetch("/api/optimize-portfolio", {
         method: "POST",
         headers: { 
-          "Content-Type": "application/json",
-          "credentials": "include"
+          "Content-Type": "application/json"
         },
+        credentials: "include",
         body: JSON.stringify({
           riskLevel: data.riskLevel,
           timeFrame: data.timeFrame,
