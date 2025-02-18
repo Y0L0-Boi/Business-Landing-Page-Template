@@ -22,6 +22,8 @@ type PortfolioSummary = {
   totalAum: number;
   totalClients: number;
   totalCommission: number;
+  amountInvested: number;
+  xirr: number;
   growthData: { month: string; aum: number }[];
 };
 
@@ -163,6 +165,8 @@ export class MemStorage implements IStorage {
         totalAum: 45000000, // Sample data: 4.5 Cr
         totalClients: Array.from(this.clients.values()).filter(c => c.userId === userId).length,
         totalCommission: 450000, // Sample data: 4.5 Lakh
+        amountInvested: 38000000, // Sample data: 3.8 Cr
+        xirr: 18.5, // Sample data: 18.5%
         growthData
       };
     } catch (error) {
