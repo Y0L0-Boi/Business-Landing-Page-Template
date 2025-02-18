@@ -31,7 +31,7 @@ export function registerRoutes(app: Express): Server {
   });
 
   app.post("/api/optimize-portfolio", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
+    if (!req.session?.userId) return res.sendStatus(401);
 
     try {
       const { riskLevel, timeFrame } = req.body;

@@ -55,18 +55,28 @@ export default function NewGoal() {
       setIsOptimizing(true);
       const response = await fetch("/api/optimize-portfolio", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "credentials": "include"
+        },
         body: JSON.stringify({
           riskLevel: data.riskLevel,
           timeFrame: data.timeFrame,
         }),
       });
 
-      if (!response.ok) throw new Error("Portfolio optimization failed");
+      if (!response.ok) {
+        if (response.status === 401) {
+          window.location.href = '/auth';
+          return;
+        }
+        throw new Error("Portfolio optimization failed");
+      }
       const result = await response.json();
       setOptimizationResult(result);
     } catch (error) {
       console.error("Error optimizing portfolio:", error);
+      alert("Failed to optimize portfolio. Please try again.");
     } finally {
       setIsOptimizing(false);
     }
