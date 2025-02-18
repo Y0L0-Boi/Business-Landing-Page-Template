@@ -36,9 +36,10 @@ export function setupAuth(app: Express) {
     rolling: true,
     cookie: {
       secure: false,
-      httpOnly: true,
-      sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000
+      httpOnly: false,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
+      path: "/"
     }
   };
 
