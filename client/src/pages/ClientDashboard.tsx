@@ -1,4 +1,4 @@
-import { useParams } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -52,6 +52,7 @@ const sampleGoals = [
 
 export default function ClientDashboard() {
   const { id } = useParams();
+  const [, setLocation] = useLocation();
 
   // In a real app, this would fetch from the API
   const { data: client, isLoading } = useQuery({
