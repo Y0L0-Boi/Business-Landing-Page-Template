@@ -92,6 +92,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { data: user, error, isLoading } = useQuery<SelectUser>({
     queryKey: ["/api/user"],
     retry: false,
+    staleTime: Infinity,
+    cacheTime: Infinity,
   });
 
   const loginMutation = useLoginMutation();

@@ -16,7 +16,7 @@ export function ProtectedRoute({
 
   useEffect(() => {
     if (!isLoading && !user) {
-      setLocation("/auth");
+      setLocation("/auth", { replace: true });
     }
   }, [user, isLoading, setLocation]);
 
