@@ -1,5 +1,6 @@
 import { useParams, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Target } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
