@@ -30,6 +30,36 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  app.post("/api/optimize-portfolio", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+
+    try {
+      const { riskLevel, timeFrame } = req.body;
+      const { spawn } = require('child_process');
+      const python = spawn('python3', ['server/portfolio_optimizer.py', riskLevel, timeFrame]);
+      
+      let result = '';
+      
+      python.stdout.on('data', (data) => {
+        result += data.toString();
+      });
+      
+      python.stderr.on('data', (data) => {
+        console.error(`Error: ${data}`);
+      });
+      
+      python.on('close', (code) => {
+        if (code !== 0) {
+          res.status(500).json({ message: "Portfolio optimization failed" });
+          return;
+        }
+        res.json(JSON.parse(result));
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to optimize portfolio" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

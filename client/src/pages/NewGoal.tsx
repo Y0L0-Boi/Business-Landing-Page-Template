@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
+import { useState } from "react";
 
 const newGoalSchema = z.object({
   goalName: z.string().min(1, "Goal name is required"),
@@ -26,8 +27,19 @@ const newGoalSchema = z.object({
 
 type NewGoalFormData = z.infer<typeof newGoalSchema>;
 
+type OptimizationResult = {
+  expected_return: number;
+  volatility: number;
+  sharpe_ratio: number;
+  plot: string;
+  allocations: Record<string, number>;
+};
+
 export default function NewGoal() {
   const { id } = useParams();
+  const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
+  const [isOptimizing, setIsOptimizing] = useState(false);
+
   const form = useForm<NewGoalFormData>({
     resolver: zodResolver(newGoalSchema),
     defaultValues: {
@@ -40,10 +52,23 @@ export default function NewGoal() {
 
   const onSubmit = async (data: NewGoalFormData) => {
     try {
-      console.log("Submitting new goal:", data);
-      window.location.href = `/clients/${id}`;
+      setIsOptimizing(true);
+      const response = await fetch("/api/optimize-portfolio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          riskLevel: data.riskLevel,
+          timeFrame: data.timeFrame,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Portfolio optimization failed");
+      const result = await response.json();
+      setOptimizationResult(result);
     } catch (error) {
-      console.error("Error creating goal:", error);
+      console.error("Error optimizing portfolio:", error);
+    } finally {
+      setIsOptimizing(false);
     }
   };
 
@@ -58,102 +83,148 @@ export default function NewGoal() {
         Back to Dashboard
       </Button>
 
-      <Card className="max-w-2xl mx-auto p-6 bg-white/5 backdrop-blur-lg border-blue-900/50">
-        <div className="flex items-center gap-3 mb-6">
-          <Target className="h-6 w-6 text-blue-400" />
-          <h1 className="text-2xl font-bold text-white">Create New Investment Goal</h1>
-        </div>
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+        <Card className="p-6 bg-white/5 backdrop-blur-lg border-blue-900/50">
+          <div className="flex items-center gap-3 mb-6">
+            <Target className="h-6 w-6 text-blue-400" />
+            <h1 className="text-2xl font-bold text-white">Create New Investment Goal</h1>
+          </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="goalName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">Goal Purpose/Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. Retirement, House, Education" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="goalName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Goal Purpose/Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. Retirement, House, Education" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="targetAmount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">Target Amount (₹)</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="e.g. 1000000" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="targetAmount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Target Amount (₹)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="e.g. 1000000" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="riskLevel"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">
-                    Risk Level (0-10, 10 being least risky)
-                  </FormLabel>
-                  <FormControl>
-                    <div className="space-y-4">
-                      <Slider
-                        min={0}
-                        max={10}
-                        step={1}
-                        value={[field.value]}
-                        onValueChange={(vals) => field.onChange(vals[0])}
-                        className="w-full"
-                      />
-                      <div className="text-center text-white">
-                        Selected Risk Level: {field.value}
+              <FormField
+                control={form.control}
+                name="riskLevel"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">
+                      Risk Level (0-10, 10 being least risky)
+                    </FormLabel>
+                    <FormControl>
+                      <div className="space-y-4">
+                        <Slider
+                          min={0}
+                          max={10}
+                          step={1}
+                          value={[field.value]}
+                          onValueChange={(vals) => field.onChange(vals[0])}
+                          className="w-full"
+                        />
+                        <div className="text-center text-white">
+                          Selected Risk Level: {field.value}
+                        </div>
                       </div>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="timeFrame"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">
-                    Time Period (Years)
-                  </FormLabel>
-                  <FormControl>
-                    <div className="space-y-4">
-                      <Slider
-                        min={1}
-                        max={30}
-                        step={1}
-                        value={[field.value]}
-                        onValueChange={(vals) => field.onChange(vals[0])}
-                        className="w-full"
-                      />
-                      <div className="text-center text-white">
-                        {field.value} Years
+              <FormField
+                control={form.control}
+                name="timeFrame"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">
+                      Time Period (Years)
+                    </FormLabel>
+                    <FormControl>
+                      <div className="space-y-4">
+                        <Slider
+                          min={1}
+                          max={30}
+                          step={1}
+                          value={[field.value]}
+                          onValueChange={(vals) => field.onChange(vals[0])}
+                          className="w-full"
+                        />
+                        <div className="text-center text-white">
+                          {field.value} Years
+                        </div>
                       </div>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <Button type="submit" className="w-full">Create Goal</Button>
-          </form>
-        </Form>
-      </Card>
+              <Button type="submit" className="w-full" disabled={isOptimizing}>
+                {isOptimizing ? "Optimizing Portfolio..." : "Create Goal"}
+              </Button>
+            </form>
+          </Form>
+        </Card>
+
+        {optimizationResult && (
+          <Card className="p-6 bg-white/5 backdrop-blur-lg border-blue-900/50">
+            <h2 className="text-xl font-bold text-white mb-4">Optimized Portfolio</h2>
+            
+            <div className="space-y-4 mb-6">
+              <div>
+                <p className="text-gray-400">Expected Return</p>
+                <p className="text-white text-xl">{optimizationResult.expected_return}%</p>
+              </div>
+              <div>
+                <p className="text-gray-400">Volatility</p>
+                <p className="text-white text-xl">{optimizationResult.volatility}%</p>
+              </div>
+              <div>
+                <p className="text-gray-400">Sharpe Ratio</p>
+                <p className="text-white text-xl">{optimizationResult.sharpe_ratio}</p>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <h3 className="text-white font-semibold mb-2">Portfolio Allocation</h3>
+              <div className="space-y-2">
+                {Object.entries(optimizationResult.allocations).map(([fund, allocation]) => (
+                  <div key={fund} className="flex justify-between">
+                    <span className="text-gray-400">{fund}</span>
+                    <span className="text-white">{allocation}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-white font-semibold mb-2">Efficient Frontier</h3>
+              <img 
+                src={`data:image/png;base64,${optimizationResult.plot}`}
+                alt="Efficient Frontier"
+                className="w-full rounded-lg"
+              />
+            </div>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }
