@@ -1,4 +1,3 @@
-
 import { useParams, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -18,6 +17,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { useState } from "react";
+import { Loader2 } from "lucide-react"; // Added import for Loader2
+
 
 const newGoalSchema = z.object({
   goalName: z.string().min(1, "Goal name is required"),
@@ -39,9 +40,17 @@ type OptimizationResult = {
 export default function NewGoal() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
   const [isOptimizing, setIsOptimizing] = useState(false);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      </div>
+    );
+  }
 
   if (!user) {
     setLocation('/auth');
@@ -204,7 +213,7 @@ export default function NewGoal() {
         {optimizationResult && (
           <Card className="p-6 bg-white/5 backdrop-blur-lg border-blue-900/50">
             <h2 className="text-xl font-bold text-white mb-4">Optimized Portfolio</h2>
-            
+
             <div className="space-y-4 mb-6">
               <div>
                 <p className="text-gray-400">Expected Return</p>
