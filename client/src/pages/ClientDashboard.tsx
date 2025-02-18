@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Indian } from "@/lib/currency";
-import { Loader2, Target, Plus, TrendingUp } from "lucide-react";
+import { Loader2, Target, Plus, TrendingUp, IndianRupee } from "lucide-react";
 
 // Sample goal-based investment data for Ramesh
 const sampleGoals = [
@@ -64,6 +64,8 @@ export default function ClientDashboard() {
       panNumber: "LMNOP7890Q",
       kycStatus: true,
       totalInvestment: 6700000,
+      amountInvested: 5800000,
+      xirr: 15.7,
       goals: sampleGoals
     })
   });
@@ -94,17 +96,43 @@ export default function ClientDashboard() {
       </div>
 
       {/* Portfolio Overview */}
-      <Card className="p-6 bg-white/5 backdrop-blur-lg border-blue-900/50 mb-8">
-        <div className="flex items-center gap-4 mb-6">
-          <TrendingUp className="h-8 w-8 text-blue-400" />
-          <div>
-            <p className="text-sm text-gray-400">Total Investment Value</p>
-            <h3 className="text-2xl font-bold text-white">
-              {Indian.format(client?.totalInvestment || 0)}
-            </h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <Card className="p-6 bg-white/5 backdrop-blur-lg border-blue-900/50">
+          <div className="flex items-center gap-4">
+            <TrendingUp className="h-8 w-8 text-blue-400" />
+            <div>
+              <p className="text-sm text-gray-400">Total Investment Value</p>
+              <h3 className="text-2xl font-bold text-white">
+                {Indian.format(client?.totalInvestment || 0)}
+              </h3>
+            </div>
           </div>
-        </div>
-      </Card>
+        </Card>
+
+        <Card className="p-6 bg-white/5 backdrop-blur-lg border-blue-900/50">
+          <div className="flex items-center gap-4">
+            <IndianRupee className="h-8 w-8 text-blue-400" />
+            <div>
+              <p className="text-sm text-gray-400">Amount Invested</p>
+              <h3 className="text-2xl font-bold text-white">
+                {Indian.format(client?.amountInvested || 0)}
+              </h3>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6 bg-white/5 backdrop-blur-lg border-blue-900/50">
+          <div className="flex items-center gap-4">
+            <TrendingUp className="h-8 w-8 text-blue-400" />
+            <div>
+              <p className="text-sm text-gray-400">XIRR</p>
+              <h3 className="text-2xl font-bold text-white">
+                {client?.xirr || 0}%
+              </h3>
+            </div>
+          </div>
+        </Card>
+      </div>
 
       {/* Goals List */}
       <div className="grid gap-6">
