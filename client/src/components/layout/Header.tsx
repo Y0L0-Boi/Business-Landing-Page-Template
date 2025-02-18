@@ -12,7 +12,7 @@ export default function Header() {
     ["rgba(0, 0, 0, 0)", "rgba(0, 30, 60, 0.95)"]
   );
   const [isScrolled, setIsScrolled] = useState(false);
-  const [location] = useLocation();
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,10 +37,17 @@ export default function Header() {
         </Link>
 
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" className="text-white hover:text-blue-400">
+          <Button 
+            variant="ghost" 
+            className="text-white hover:text-blue-400"
+            onClick={() => setLocation("/auth")}
+          >
             Register
           </Button>
-          <Button className="bg-blue-500 text-white hover:bg-blue-600">
+          <Button 
+            className="bg-blue-500 text-white hover:bg-blue-600"
+            onClick={() => setLocation("/auth")}
+          >
             <LogIn className="mr-2 h-4 w-4" /> Login
           </Button>
         </div>
