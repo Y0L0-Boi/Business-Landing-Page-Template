@@ -23,7 +23,7 @@ type AuthFormData = z.infer<typeof authSchema>;
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const { toast } = useToast();
-  const { loginMutation } = useAuth();
+  const { loginMutation, registerMutation } = useAuth();
   const [, setLocation] = useLocation();
 
   const form = useForm<AuthFormData>({
@@ -36,13 +36,18 @@ export default function Auth() {
 
   const onSubmit = async (data: AuthFormData) => {
     try {
-      await loginMutation.mutateAsync(data);
+      if (isLogin) {
+        await loginMutation.mutateAsync(data);
+      } else {
+        await registerMutation.mutateAsync(data);
+      }
       setLocation("/dashboard");
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Auth error:", error);
       toast({
         title: "Error",
-        description: "Login failed. Please check your credentials.",
+        description: isLogin ? "Login failed. Please check your credentials." : "Registration failed. Please try again.",
+        variant: "destructive"
       });
     }
   };
@@ -113,6 +118,7 @@ export default function Auth() {
                   <Button
                     type="submit"
                     className="w-full bg-blue-500 hover:bg-blue-600"
+                    disabled={loginMutation.isPending || registerMutation.isPending}
                   >
                     {isLogin ? (
                       <><LogIn className="mr-2 h-4 w-4" /> Login</>
