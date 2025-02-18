@@ -2,7 +2,12 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { setupAuth } from "./auth";
-import cookieParser from "cookie-parser"; // Added cookie-parser import
+import cookieParser from "cookie-parser";
+
+const app = express();
+app.set('trust proxy', 1);
+app.use(cookieParser());
+app.use(express.json());
 
 const app = express();
 app.use(cookieParser()); // Added cookie-parser middleware
