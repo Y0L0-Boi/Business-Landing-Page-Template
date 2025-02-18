@@ -13,9 +13,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(function(req, res, next) {
   const origin = req.headers.origin;
   res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Origin', origin);
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Origin', origin || 'http://localhost:5173');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Set-Cookie');
+  res.header('Access-Control-Expose-Headers', 'Set-Cookie');
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
   }

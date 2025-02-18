@@ -34,10 +34,11 @@ export function setupAuth(app: Express) {
     resave: true,
     saveUninitialized: true,
     rolling: true,
+    name: 'connect.sid',
     cookie: {
-      secure: false,
-      httpOnly: false,
-      sameSite: "none",
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      sameSite: 'lax',
       maxAge: 24 * 60 * 60 * 1000,
       path: "/"
     }
