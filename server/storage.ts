@@ -60,7 +60,7 @@ export class MemStorage implements IStorage {
       };
       this.users.set(chinmay.id, chinmay);
 
-      // Add sample clients
+      // Add sample clients including Ramesh
       const sampleClients: Client[] = [
         {
           id: 1,
@@ -79,6 +79,16 @@ export class MemStorage implements IStorage {
           email: "priya@example.com",
           phone: "+91 98765 43211",
           panNumber: "FGHIJ5678K",
+          kycStatus: true,
+          createdAt: new Date()
+        },
+        {
+          id: 3,
+          userId: chinmay.id,
+          name: "Ramesh Kumar",
+          email: "ramesh@example.com",
+          phone: "+91 98765 43212",
+          panNumber: "LMNOP7890Q",
           kycStatus: true,
           createdAt: new Date()
         }

@@ -8,6 +8,8 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
+import ClientDashboard from "@/pages/ClientDashboard";
+import NewGoal from "@/pages/NewGoal";
 
 function Router() {
   return (
@@ -15,6 +17,8 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/auth" component={Auth} />
       <ProtectedRoute path="/dashboard" component={Dashboard} />
+      <ProtectedRoute path="/clients/:id" component={ClientDashboard} />
+      <ProtectedRoute path="/clients/:id/goals/new" component={NewGoal} />
       <Route component={NotFound} />
     </Switch>
   );
