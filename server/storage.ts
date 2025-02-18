@@ -1,8 +1,17 @@
 import { users, type User, type InsertUser, type Client, type Fund } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import { scrypt, randomBytes } from "crypto";
+import { promisify } from "util";
 
+const scryptAsync = promisify(scrypt);
 const MemoryStore = createMemoryStore(session);
+
+async function hashPassword(password: string) {
+  const salt = randomBytes(16).toString("hex");
+  const buf = (await scryptAsync(password, salt, 64)) as Buffer;
+  return `${buf.toString("hex")}.${salt}`;
+}
 
 type ClientWithPortfolio = Client & {
   portfolioValue: number;
@@ -41,42 +50,44 @@ export class MemStorage implements IStorage {
       checkPeriod: 86400000, // prune expired entries every 24h
     });
 
-    // Add sample data for Chinmay's dashboard
-    const chinmay: User = {
-      id: 1,
-      username: "Chinmay",
-      password: "qwertyuiop"  // This should be hashed in production
-    };
-    this.users.set(chinmay.id, chinmay);
-
-    // Add sample clients
-    const sampleClients: Client[] = [
-      {
+    // Initialize with hashed password for Chinmay
+    (async () => {
+      const hashedPassword = await hashPassword("qwertyuiop");
+      const chinmay: User = {
         id: 1,
-        userId: chinmay.id,
-        name: "Rahul Sharma",
-        email: "rahul@example.com",
-        phone: "+91 98765 43210",
-        panNumber: "ABCDE1234F",
-        kycStatus: true,
-        createdAt: new Date()
-      },
-      {
-        id: 2,
-        userId: chinmay.id,
-        name: "Priya Patel",
-        email: "priya@example.com",
-        phone: "+91 98765 43211",
-        panNumber: "FGHIJ5678K",
-        kycStatus: true,
-        createdAt: new Date()
-      }
-    ];
+        username: "Chinmay",
+        password: hashedPassword
+      };
+      this.users.set(chinmay.id, chinmay);
 
-    sampleClients.forEach(client => this.clients.set(client.id, client));
+      // Add sample clients
+      const sampleClients: Client[] = [
+        {
+          id: 1,
+          userId: chinmay.id,
+          name: "Rahul Sharma",
+          email: "rahul@example.com",
+          phone: "+91 98765 43210",
+          panNumber: "ABCDE1234F",
+          kycStatus: true,
+          createdAt: new Date()
+        },
+        {
+          id: 2,
+          userId: chinmay.id,
+          name: "Priya Patel",
+          email: "priya@example.com",
+          phone: "+91 98765 43211",
+          panNumber: "FGHIJ5678K",
+          kycStatus: true,
+          createdAt: new Date()
+        }
+      ];
+
+      sampleClients.forEach(client => this.clients.set(client.id, client));
+    })();
   }
 
-  // Existing methods
   async getUser(id: number): Promise<User | undefined> {
     try {
       return this.users.get(id);
@@ -100,7 +111,8 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     try {
       const id = this.currentId++;
-      const user: User = { ...insertUser, id };
+      const hashedPassword = await hashPassword(insertUser.password);
+      const user: User = { ...insertUser, id, password: hashedPassword };
       this.users.set(id, user);
       return user;
     } catch (error) {
@@ -109,7 +121,6 @@ export class MemStorage implements IStorage {
     }
   }
 
-  // New methods for dashboard functionality
   async getClientsWithPortfolio(userId: number): Promise<ClientWithPortfolio[]> {
     try {
       const userClients = Array.from(this.clients.values())
