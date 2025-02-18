@@ -10,6 +10,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { LogIn, UserPlus, TrendingUp, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import WavePattern from "@/components/ui/patterns/WavePattern";
+import { useAuth } from "@/hooks/use-auth";
+import { useLocation } from "wouter";
 
 const authSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -21,7 +23,9 @@ type AuthFormData = z.infer<typeof authSchema>;
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const { toast } = useToast();
-  
+  const { loginMutation } = useAuth();
+  const [, setLocation] = useLocation();
+
   const form = useForm<AuthFormData>({
     resolver: zodResolver(authSchema),
     defaultValues: {
@@ -30,18 +34,23 @@ export default function Auth() {
     },
   });
 
-  const onSubmit = (data: AuthFormData) => {
-    toast({
-      title: isLogin ? "Logging in..." : "Creating account...",
-      description: "Please wait while we process your request.",
-    });
-    console.log(data);
+  const onSubmit = async (data: AuthFormData) => {
+    try {
+      await loginMutation.mutateAsync(data);
+      setLocation("/dashboard");
+    } catch (error) {
+      console.error("Login error:", error);
+      toast({
+        title: "Error",
+        description: "Login failed. Please check your credentials.",
+      });
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-900 to-black relative overflow-hidden">
       <WavePattern className="opacity-30" />
-      
+
       <div className="container mx-auto px-6 py-8 relative">
         <div className="grid md:grid-cols-2 gap-12 items-center min-h-[calc(100vh-4rem)]">
           {/* Form Section */}
