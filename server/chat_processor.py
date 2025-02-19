@@ -38,21 +38,38 @@ def load_knowledge_base():
     return db
 
 def process_query(vectorstore, query: str) -> str:
-    # Create retriever
-    retriever = vectorstore.as_retriever(
-        search_type="similarity",
-        search_kwargs={"k": 3}
-    )
-    
-    # Get relevant documents
-    docs = retriever.get_relevant_documents(query)
-    
-    # Construct response based on retrieved documents
-    if not docs:
-        return "I couldn't find relevant information in my knowledge base."
-    
-    context = "\n".join([doc.page_content for doc in docs])
-    return f"Based on the available information: {context}"
+    try:
+        # Create retriever
+        retriever = vectorstore.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 3}
+        )
+        
+        # Get relevant documents
+        docs = retriever.get_relevant_documents(query)
+        
+        # Construct response based on retrieved documents
+        if not docs:
+            return "I apologize, but I couldn't find specific information about that in my knowledge base. Could you please rephrase your question or ask about a different topic related to mutual funds?"
+        
+        # Extract and format relevant information
+        contexts = []
+        for doc in docs:
+            # Clean and format the content
+            content = doc.page_content.strip()
+            if content:
+                contexts.append(content)
+        
+        if not contexts:
+            return "I found some information but it needs to be processed differently. Could you please rephrase your question?"
+            
+        # Combine contexts into a coherent response
+        combined_context = " ".join(contexts)
+        return combined_context
+
+    except Exception as e:
+        print(f"Error processing query: {str(e)}", file=sys.stderr)
+        return "I apologize, but I encountered an error while processing your request. Please try again with a different question about mutual funds or financial topics."
 
 def main():
     # Load knowledge base
