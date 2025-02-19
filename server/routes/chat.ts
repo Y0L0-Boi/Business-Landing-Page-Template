@@ -1,36 +1,52 @@
 
 import { Router } from 'express';
+import { spawn } from 'child_process';
 import { readdir, readFile } from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 const router = Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-async function loadKnowledgeBase() {
-  const knowledgeDir = path.join(__dirname, '../knowledge');
-  const files = await readdir(knowledgeDir);
-  let knowledge = '';
-  
-  for (const file of files) {
-    if (file.endsWith('.txt')) {
-      const content = await readFile(path.join(knowledgeDir, file), 'utf-8');
-      knowledge += content + '\n';
-    }
-  }
-  
-  return knowledge;
+async function processChat(message: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const pythonProcess = spawn('python3', [
+      path.join(__dirname, '../chat_processor.py')
+    ]);
+
+    let result = '';
+    let error = '';
+
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+
+    pythonProcess.stdin.write(JSON.stringify({ message }) + '\n');
+    pythonProcess.stdin.end();
+
+    pythonProcess.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error(`Python process exited with code ${code}: ${error}`));
+      } else {
+        resolve(result.trim());
+      }
+    });
+  });
 }
 
 router.post('/chat', async (req, res) => {
   try {
     const { message } = req.body;
-    const knowledge = await loadKnowledgeBase();
-    
-    // Here you can implement your chat logic using the loaded knowledge
-    // For now, returning a simple response
-    const response = "I'm your financial advisor bot. I can help you understand mutual funds, portfolio allocation, and investment procedures.";
-    
+    const response = await processChat(message);
     res.json({ response });
   } catch (error) {
+    console.error('Chat processing error:', error);
     res.status(500).json({ error: 'Failed to process chat message' });
   }
 });
