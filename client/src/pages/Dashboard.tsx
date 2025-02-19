@@ -33,29 +33,54 @@ type PortfolioSummary = {
   totalAum: number;
   totalClients: number;
   totalCommission: number;
+  amountInvested: number;
+  xirr: number;
   growthData: { month: string; aum: number }[];
 };
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
 
-  // For demonstration, using static data
+  // For demonstration, using static data for clients
   const { data: clients, isLoading: isLoadingClients } = useQuery<ClientWithPortfolio[]>({
     queryKey: ["/api/clients"],
-    queryFn: () => Promise.resolve([{
-      id: 1,
-      name: "Ramesh Kumar",
-      email: "ramesh@example.com",
-      phone: "+91 98765 43212",
-      panNumber: "LMNOP7890Q",
-      kycStatus: true,
-      portfolioValue: 6700000,
-      fundCount: 6
-    }])
+    queryFn: () =>
+      Promise.resolve([
+        {
+          id: 1,
+          name: "Ramesh Kumar",
+          userId: null,
+          email: "ramesh@example.com",
+          phone: "+91 98765 43212",
+          panNumber: "LMNOP7890Q",
+          kycStatus: true,
+          createdAt: null,
+          portfolioValue: 6700000,
+          fundCount: 6,
+        },
+      ]),
+    initialData: [],
   });
 
+  // For demonstration, using static data for portfolio summary
   const { data: portfolioSummary, isLoading: isLoadingSummary } = useQuery<PortfolioSummary>({
     queryKey: ["/api/portfolio/summary"],
+    queryFn: () =>
+      Promise.resolve({
+        totalAum: 1000000000,
+        totalClients: 100,
+        totalCommission: 5000000,
+        amountInvested: 800000000,
+        xirr: 12.5,
+        growthData: [
+          { month: "Jan", aum: 200000000 },
+          { month: "Feb", aum: 210000000 },
+          { month: "Mar", aum: 220000000 },
+          { month: "Apr", aum: 230000000 },
+          { month: "May", aum: 240000000 },
+          { month: "Jun", aum: 250000000 },
+        ],
+      }),
   });
 
   if (isLoadingClients || isLoadingSummary) {
@@ -76,7 +101,7 @@ export default function Dashboard() {
             <div>
               <p className="text-sm text-gray-400">Total Clients</p>
               <h3 className="text-2xl font-bold text-white">
-                {portfolioSummary?.totalClients}
+                {portfolioSummary?.totalClients ?? 0}
               </h3>
             </div>
           </div>
@@ -88,7 +113,7 @@ export default function Dashboard() {
             <div>
               <p className="text-sm text-gray-400">Total AUM</p>
               <h3 className="text-2xl font-bold text-white">
-                {Indian.format(portfolioSummary?.totalAum || 0)}
+                {Indian.format(portfolioSummary?.totalAum ?? 0)}
               </h3>
             </div>
           </div>
@@ -100,7 +125,7 @@ export default function Dashboard() {
             <div>
               <p className="text-sm text-gray-400">Total Commission</p>
               <h3 className="text-2xl font-bold text-white">
-                {Indian.format(portfolioSummary?.totalCommission || 0)}
+                {Indian.format(portfolioSummary?.totalCommission ?? 0)}
               </h3>
             </div>
           </div>
@@ -112,7 +137,7 @@ export default function Dashboard() {
             <div>
               <p className="text-sm text-gray-400">Amount Invested</p>
               <h3 className="text-2xl font-bold text-white">
-                {Indian.format(portfolioSummary?.amountInvested || 0)}
+                {Indian.format(portfolioSummary?.amountInvested ?? 0)}
               </h3>
             </div>
           </div>
@@ -124,7 +149,7 @@ export default function Dashboard() {
             <div>
               <p className="text-sm text-gray-400">XIRR</p>
               <h3 className="text-2xl font-bold text-white">
-                {portfolioSummary?.xirr || 0}%
+                {portfolioSummary?.xirr ?? 0}%
               </h3>
             </div>
           </div>
@@ -136,7 +161,7 @@ export default function Dashboard() {
         <h3 className="text-xl font-semibold text-white mb-4">Portfolio Growth</h3>
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={portfolioSummary?.growthData}>
+            <LineChart data={portfolioSummary?.growthData ?? []}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e3a8a" />
               <XAxis dataKey="month" stroke="#94a3b8" />
               <YAxis
@@ -185,7 +210,7 @@ export default function Dashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {clients?.map((client) => (
+              {(clients ?? []).map((client: ClientWithPortfolio) => (
                 <TableRow
                   key={client.id}
                   className="cursor-pointer hover:bg-white/5"
@@ -197,9 +222,7 @@ export default function Dashboard() {
                   <TableCell className="text-gray-300">
                     {Indian.format(client.portfolioValue)}
                   </TableCell>
-                  <TableCell className="text-gray-300">
-                    {client.fundCount}
-                  </TableCell>
+                  <TableCell className="text-gray-300">{client.fundCount}</TableCell>
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${

@@ -1,4 +1,5 @@
-
+import sys
+import json
 import numpy as np
 import pandas as pd
 import yfinance as yf
@@ -25,9 +26,9 @@ def optimize_portfolio(risk_aversion, time_period):
     cov_matrix = log_returns.cov() * trading_days
     
     num_portfolios = 10000
-    A = float(risk_aversion) / 10  # Convert 0-10 scale to 0-1
+    A = float(risk_aversion)  # Convert 0-10 scale to appropriate value
     max_investment_horizon = 30
-    target_safe_allocation = (max_investment_horizon - time_period) / max_investment_horizon
+    target_safe_allocation = (max_investment_horizon - float(time_period)) / max_investment_horizon
     
     # Portfolio optimization (simplified for performance)
     results = []
@@ -69,7 +70,7 @@ def optimize_portfolio(risk_aversion, time_period):
     plot_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
     plt.close()
     
-    # Get asset names
+    # Get asset names and allocations
     asset_names = []
     asset_allocations = []
     for symbol, weight in zip(symbols, optimal_weights):
@@ -83,3 +84,13 @@ def optimize_portfolio(risk_aversion, time_period):
         'plot': plot_base64,
         'allocations': dict(zip(asset_names, asset_allocations))
     }
+
+if __name__ == "__main__":
+    # Expecting two arguments: risk_aversion and time_period
+    if len(sys.argv) < 3:
+        print(json.dumps({"error": "Two arguments required: risk_aversion and time_period"}))
+        sys.exit(1)
+    risk_aversion = sys.argv[1]
+    time_period = sys.argv[2]
+    result = optimize_portfolio(risk_aversion, time_period)
+    print(json.dumps(result))

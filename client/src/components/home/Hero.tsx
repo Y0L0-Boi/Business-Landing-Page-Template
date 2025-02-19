@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, TrendingUp, Shield, Award } from "lucide-react";
-import GridPattern from "../ui/patterns/GridPattern";
+import { ArrowRight } from "lucide-react";
 
 const stats = [
   { number: "1000+", label: "Happy Distributors" },
@@ -14,7 +13,6 @@ export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-gradient-to-b from-blue-900 to-black">
       <GridPattern className="opacity-30" />
-
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -81,3 +79,20 @@ export default function Hero() {
     </section>
   );
 }
+
+export function GridPattern({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="100%"
+      height="100%"
+      viewBox="0 0 800 600"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* SVG content */}
+    </svg>
+  );
+}
+
+

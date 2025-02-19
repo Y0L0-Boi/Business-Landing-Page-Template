@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
+import { spawn } from "child_process"; // <-- Added import
 
 export function registerRoutes(app: Express): Server {
   // Set up authentication routes (/api/register, /api/login, /api/logout, /api/user)
@@ -38,28 +39,50 @@ export function registerRoutes(app: Express): Server {
 
     try {
       const { riskLevel, timeFrame } = req.body;
-      const { spawn } = require('child_process');
-      const python = spawn('python3', ['server/portfolio_optimizer.py', riskLevel, timeFrame]);
-      
-      let result = '';
-      
-      python.stdout.on('data', (data) => {
+      // Use the imported spawn instead of require
+      const python = spawn("python3", [
+        "server/portfolio_optimizer.py",
+        riskLevel,
+        timeFrame,
+      ]);
+
+      let result = "";
+      let errorOutput = "";
+
+      python.stdout.on("data", (data: Buffer) => {
         result += data.toString();
       });
-      
-      python.stderr.on('data', (data) => {
-        console.error(`Error: ${data}`);
+
+      python.stderr.on("data", (data: Buffer) => {
+        errorOutput += data.toString();
       });
-      
-      python.on('close', (code) => {
+
+      python.on("close", (code: number) => {
+        console.log("Raw Python output:", result);
         if (code !== 0) {
-          res.status(500).json({ message: "Portfolio optimization failed" });
-          return;
+          console.error("Python script error:", errorOutput);
+          return res.status(422).json({
+            message: "Portfolio optimization failed",
+            details: errorOutput || "Unknown error occurred",
+          });
         }
-        res.json(JSON.parse(result));
+        try {
+          const optimizedResult = JSON.parse(result);
+          res.json(optimizedResult);
+        } catch (parseError) {
+          console.error("Failed to parse Python output:", parseError);
+          return res.status(500).json({
+            message: "Invalid response format from optimizer",
+            details: result,
+          });
+        }
       });
-    } catch (error) {
-      res.status(500).json({ message: "Failed to optimize portfolio" });
+    } catch (error: any) {
+      console.error("Server error during optimization:", error);
+      res.status(500).json({
+        message: "Failed to optimize portfolio",
+        details: error.toString(),
+      });
     }
   });
 

@@ -87,13 +87,28 @@ export default function NewGoal() {
           alert("Please log in again to continue");
           return;
         }
-        throw new Error("Portfolio optimization failed");
+        // Attempt to extract a detailed error message from the response
+        let errorDetail = "Portfolio optimization failed";
+        try {
+          const errorResponse = await response.json();
+          if (errorResponse.message) {
+            errorDetail = errorResponse.message;
+            if (errorResponse.details) {
+              errorDetail += `: ${errorResponse.details}`;
+            }
+          }
+        } catch (e) {
+          // Ignore JSON parsing errors and use the default error message
+        }
+        alert(errorDetail);
+        return;
       }
+
       const result = await response.json();
       setOptimizationResult(result);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error optimizing portfolio:", error);
-      alert("Failed to optimize portfolio. Please try again.");
+      alert("An unexpected error occurred. Please try again.");
     } finally {
       setIsOptimizing(false);
     }

@@ -96,7 +96,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refetchOnWindowFocus: true,
     refetchInterval: false,
     staleTime: Infinity,
-    cacheTime: Infinity,
   });
 
   const loginMutation = useLoginMutation();

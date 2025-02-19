@@ -37,16 +37,13 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private clients: Map<number, Client>;
-  private funds: Map<number, Fund>;
+  private users: Map<number, User> = new Map();
+  private clients: Map<number, Client> = new Map();
+  private funds: Map<number, Fund> = new Map();
   currentId: number;
   sessionStore: session.Store;
 
   constructor() {
-    this.users = new Map();
-    this.clients = new Map();
-    this.funds = new Map();
     this.currentId = 1;
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // prune expired entries every 24h
