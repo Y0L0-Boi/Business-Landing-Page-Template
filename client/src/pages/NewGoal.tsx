@@ -55,13 +55,15 @@ export default function NewGoal() {
   const [pieChartData, setPieChartData] = useState<{ name: string; value: number }[]>([]);
 
   useEffect(() => {
-    if (optimizationResult) {
+    if (optimizationResult && optimizationResult.allocations) {
       // Transform allocations data for the pie chart
       const data = Object.entries(optimizationResult.allocations).map(([symbol, value]) => ({
         name: MUTUAL_FUND_NAMES[symbol] || symbol, // Use the name if available, otherwise use the symbol
         value: value,
       }));
       setPieChartData(data);
+    } else {
+      setPieChartData([]); // Set to empty array if allocations is null/undefined
     }
   }, [optimizationResult]);
 
@@ -271,7 +273,7 @@ export default function NewGoal() {
             <div className="mb-6">
               <h3 className="text-white font-semibold mb-2">Portfolio Allocation</h3>
               <div className="space-y-2">
-                {Object.entries(optimizationResult.allocations).map(([symbol, allocation]) => {
+                {optimizationResult?.allocations && Object.entries(optimizationResult.allocations).map(([symbol, allocation]) => {
                   const fundName = MUTUAL_FUND_NAMES[symbol] || symbol; // Use the name if available, otherwise use the symbol
                   return (
                     <div key={symbol} className="flex justify-between">
