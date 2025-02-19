@@ -41,7 +41,8 @@ type PortfolioSummary = {
 export default function Dashboard() {
   const [, setLocation] = useLocation();
 
-  // For demonstration, using static data for clients
+  // For demonstration, using static data for clients.
+  // Removed initialData option so that the queryFn's result updates the data.
   const { data: clients, isLoading: isLoadingClients } = useQuery<ClientWithPortfolio[]>({
     queryKey: ["/api/clients"],
     queryFn: () =>
@@ -59,7 +60,6 @@ export default function Dashboard() {
           fundCount: 6,
         },
       ]),
-    initialData: [],
   });
 
   // For demonstration, using static data for portfolio summary
