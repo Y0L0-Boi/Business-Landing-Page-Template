@@ -16,9 +16,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { useState } from "react";
-import { Loader2 } from "lucide-react"; // Added import for Loader2
-
+import { useState, useEffect } from "react";
+import { Loader2 } from "lucide-react";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts'; // Import PieChart components
 
 const newGoalSchema = z.object({
   goalName: z.string().min(1, "Goal name is required"),
@@ -37,12 +37,35 @@ type OptimizationResult = {
   allocations: Record<string, number>;
 };
 
+const MUTUAL_FUND_NAMES: Record<string, string> = {
+  '0P0000XVUB.BO': 'Axis Liquid Fund',
+  '0P0000XV5S.BO': 'Kotak Equity Arbitrage Fund',
+  '0P0000XVK2.BO': 'SBI Gilt Fund',
+  '0P0000XVJK.BO': 'SBI Gold Fund',
+  '0P0000XVU2.BO': 'UTI Nifty Index Fund',
+  '0P0001IAU9.BO': 'MOSL Nifty Midcap 150',
+};
+
 export default function NewGoal() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
   const { user, isLoading } = useAuth();
   const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [pieChartData, setPieChartData] = useState<{ name: string; value: number }[]>([]);
+
+  useEffect(() => {
+    if (optimizationResult) {
+      // Transform allocations data for the pie chart
+      const data = Object.entries(optimizationResult.allocations).map(([symbol, value]) => ({
+        name: MUTUAL_FUND_NAMES[symbol] || symbol, // Use the name if available, otherwise use the symbol
+        value: value,
+      }));
+      setPieChartData(data);
+    }
+  }, [optimizationResult]);
+
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d']; // Define colors for the pie chart
 
   if (isLoading) {
     return (
@@ -72,7 +95,7 @@ export default function NewGoal() {
       setIsOptimizing(true);
       const response = await fetch("/api/optimize-portfolio", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json"
         },
         credentials: "include",
@@ -87,7 +110,6 @@ export default function NewGoal() {
           alert("Please log in again to continue");
           return;
         }
-        // Attempt to extract a detailed error message from the response
         let errorDetail = "Portfolio optimization failed";
         try {
           const errorResponse = await response.json();
@@ -98,7 +120,9 @@ export default function NewGoal() {
             }
           }
         } catch (e) {
-          // Ignore JSON parsing errors and use the default error message
+          // Handle JSON parsing error if the response is not valid JSON
+          console.error("Failed to parse error response:", e);
+          errorDetail = "Portfolio optimization failed due to an unexpected error.";
         }
         alert(errorDetail);
         return;
@@ -119,7 +143,7 @@ export default function NewGoal() {
       <Button
         variant="ghost"
         className="text-gray-400 hover:text-white mb-8"
-        onClick={() => window.location.href = `/clients/${id}`}
+        onClick={() => { window.location.href = `/clients/${id}`; }}
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Dashboard
@@ -247,22 +271,49 @@ export default function NewGoal() {
             <div className="mb-6">
               <h3 className="text-white font-semibold mb-2">Portfolio Allocation</h3>
               <div className="space-y-2">
-                {Object.entries(optimizationResult.allocations).map(([fund, allocation]) => (
-                  <div key={fund} className="flex justify-between">
-                    <span className="text-gray-400">{fund}</span>
-                    <span className="text-white">{allocation}%</span>
-                  </div>
-                ))}
+                {Object.entries(optimizationResult.allocations).map(([symbol, allocation]) => {
+                  const fundName = MUTUAL_FUND_NAMES[symbol] || symbol; // Use the name if available, otherwise use the symbol
+                  return (
+                    <div key={symbol} className="flex justify-between">
+                      <span className="text-gray-400">{fundName}</span>
+                      <span className="text-white">{allocation}%</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
             <div>
-              <h3 className="text-white font-semibold mb-2">Efficient Frontier</h3>
-              <img 
-                src={`data:image/png;base64,${optimizationResult.plot}`}
-                alt="Efficient Frontier"
-                className="w-full rounded-lg"
-              />
+              <h3 className="text-white font-semibold mb-2">Portfolio Allocation Pie Chart</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={pieChartData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    fill="#8884d8"
+                    label
+                  >
+                    {
+                      pieChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))
+                    }
+                  </Pie>
+                  <Legend
+                    align="center"
+                    verticalAlign="bottom"
+                    layout="horizontal"
+                    iconSize={10}
+                    formatter={(value, entry, index) => (
+                      <span style={{ color: 'white' }}>{value}</span>
+                    )}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
           </Card>
         )}
