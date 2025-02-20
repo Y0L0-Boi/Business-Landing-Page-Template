@@ -39,6 +39,9 @@ def load_knowledge_base():
 
 def process_query(vectorstore, query: str) -> str:
     try:
+        if not query.strip():
+            return "Please provide a question about mutual funds or financial topics."
+
         # Create retriever
         retriever = vectorstore.as_retriever(
             search_type="similarity",
@@ -50,22 +53,28 @@ def process_query(vectorstore, query: str) -> str:
         
         # Construct response based on retrieved documents
         if not docs:
-            return "I apologize, but I couldn't find specific information about that in my knowledge base. Could you please rephrase your question or ask about a different topic related to mutual funds?"
+            return "I couldn't find specific information about that. Try asking about mutual funds, portfolio allocation, or investment procedures."
         
         # Extract and format relevant information
         contexts = []
         for doc in docs:
-            # Clean and format the content
             content = doc.page_content.strip()
             if content:
                 contexts.append(content)
         
         if not contexts:
-            return "I found some information but it needs to be processed differently. Could you please rephrase your question?"
+            return "Please try asking about specific mutual fund topics or investment strategies."
             
-        # Combine contexts into a coherent response
-        combined_context = " ".join(contexts)
-        return combined_context
+        # Process and format the response
+        response = " ".join(contexts)
+        # Limit response length and ensure complete sentences
+        if len(response) > 500:
+            response = ". ".join(response[:500].split(". ")[:-1]) + "."
+        return response
+
+    except Exception as e:
+        print(f"Error in process_query: {str(e)}", file=sys.stderr)
+        return "I encountered an issue while processing your request. Please ask about mutual funds or investment topics."
 
     except Exception as e:
         print(f"Error processing query: {str(e)}", file=sys.stderr)
