@@ -41,7 +41,7 @@ async function processChat(message: string, selectedContent?: string): Promise<s
 
 router.post('/chat', async (req, res) => {
   try {
-    const { message, selectedContent } = req.body;
+    const { message, selectedContent, selectedElement } = req.body;
     const response = await processChat(message, selectedContent);
     res.json({ response });
   } catch (error) {
