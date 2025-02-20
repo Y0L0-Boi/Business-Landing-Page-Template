@@ -42,43 +42,36 @@ def process_query(vectorstore, query: str) -> str:
         if not query.strip():
             return "Please provide a question about mutual funds or financial topics."
 
+        # Initialize Llama
+        llm = LlamaCpp(
+            model_path="./llama-2-7b-chat.gguf",
+            temperature=0.7,
+            max_tokens=2000,
+            n_ctx=2048,
+            verbose=False
+        )
+
         # Create retriever
         retriever = vectorstore.as_retriever(
             search_type="similarity",
             search_kwargs={"k": 3}
         )
         
-        # Get relevant documents
-        docs = retriever.get_relevant_documents(query)
+        # Create QA chain
+        qa_chain = RetrievalQA.from_chain_type(
+            llm=llm,
+            chain_type="stuff",
+            retriever=retriever,
+            return_source_documents=True
+        )
         
-        # Construct response based on retrieved documents
-        if not docs:
-            return "I couldn't find specific information about that. Try asking about mutual funds, portfolio allocation, or investment procedures."
-        
-        # Extract and format relevant information
-        contexts = []
-        for doc in docs:
-            content = doc.page_content.strip()
-            if content:
-                contexts.append(content)
-        
-        if not contexts:
-            return "Please try asking about specific mutual fund topics or investment strategies."
-            
-        # Process and format the response
-        response = " ".join(contexts)
-        # Limit response length and ensure complete sentences
-        if len(response) > 500:
-            response = ". ".join(response[:500].split(". ")[:-1]) + "."
-        return response
+        # Get response
+        result = qa_chain({"query": query})
+        return result["result"]
 
     except Exception as e:
         print(f"Error in process_query: {str(e)}", file=sys.stderr)
         return "I encountered an issue while processing your request. Please ask about mutual funds or investment topics."
-
-    except Exception as e:
-        print(f"Error processing query: {str(e)}", file=sys.stderr)
-        return "I apologize, but I encountered an error while processing your request. Please try again with a different question about mutual funds or financial topics."
 
 def main():
     # Load knowledge base
