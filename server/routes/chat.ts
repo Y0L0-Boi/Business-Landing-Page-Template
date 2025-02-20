@@ -1,4 +1,3 @@
-
 import { Router } from 'express';
 import { spawn } from 'child_process';
 import { readdir, readFile } from 'fs/promises';
@@ -10,7 +9,7 @@ const router = Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-async function processChat(message: string): Promise<string> {
+async function processChat(message: string, selectedContent?: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const pythonProcess = spawn('python3', [
       path.join(__dirname, '../chat_processor.py')
@@ -27,7 +26,7 @@ async function processChat(message: string): Promise<string> {
       error += data.toString();
     });
 
-    pythonProcess.stdin.write(JSON.stringify({ message }) + '\n');
+    pythonProcess.stdin.write(JSON.stringify({ message, selectedContent }) + '\n');
     pythonProcess.stdin.end();
 
     pythonProcess.on('close', (code) => {
@@ -42,8 +41,8 @@ async function processChat(message: string): Promise<string> {
 
 router.post('/chat', async (req, res) => {
   try {
-    const { message } = req.body;
-    const response = await processChat(message);
+    const { message, selectedContent } = req.body;
+    const response = await processChat(message, selectedContent);
     res.json({ response });
   } catch (error) {
     console.error('Chat processing error:', error);
