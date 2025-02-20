@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, MousePointer } from 'lucide-react';
 import { Button } from '../button';
@@ -56,7 +55,7 @@ export function Chatbot({ className }: { className?: string }) {
       setSelectedElement(target);
       setIsSelecting(false);
       setInput(`Selected element content: ${target.textContent?.trim()}`);
-      
+
       // Remove highlight from all elements
       document.querySelectorAll('.chatbot-highlight').forEach(el => {
         el.classList.remove('chatbot-highlight');
@@ -96,10 +95,10 @@ export function Chatbot({ className }: { className?: string }) {
           selectedContent: selectedElement?.textContent || null
         }),
       });
-      
+
       const data = await response.json();
-      
-      // Check if response contains element highlight instructions
+
+      // Handle element highlighting if response contains highlight instructions
       if (data.highlightSelector) {
         document.querySelectorAll('.chatbot-highlight').forEach(el => {
           el.classList.remove('chatbot-highlight');
@@ -108,6 +107,7 @@ export function Chatbot({ className }: { className?: string }) {
           const elementToHighlight = document.querySelector(data.highlightSelector);
           if (elementToHighlight) {
             elementToHighlight.classList.add('chatbot-highlight');
+            elementToHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
         } catch (err) {
           console.error('Invalid selector:', data.highlightSelector);
