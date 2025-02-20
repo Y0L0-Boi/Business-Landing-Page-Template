@@ -42,14 +42,19 @@ def process_query(vectorstore, query: str) -> str:
         if not query.strip():
             return "Please provide a question about mutual funds or financial topics."
 
-        # Initialize Llama
-        llm = LlamaCpp(
-            model_path="./llama-2-7b-chat.gguf",
-            temperature=0.7,
-            max_tokens=2000,
-            n_ctx=2048,
-            verbose=False
-        )
+        # Initialize Llama with error handling
+        try:
+            llm = LlamaCpp(
+                model_path="./llama-2-7b-chat.gguf",
+                temperature=0.7,
+                max_tokens=2000,
+                n_ctx=2048,
+                n_threads=4,
+                verbose=True
+            )
+        except Exception as model_error:
+            print(f"Error loading model: {str(model_error)}", file=sys.stderr)
+            return "I'm having trouble initializing. Please try again in a moment."
 
         # Create retriever
         retriever = vectorstore.as_retriever(
