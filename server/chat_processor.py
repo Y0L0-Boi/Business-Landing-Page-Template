@@ -7,9 +7,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chains import RetrievalQA
-from langchain.llms import HuggingFacePipeline
+from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 import os
-from transformers import pipeline
 
 def load_knowledge_base():
     # Initialize document storage
@@ -45,13 +44,9 @@ def process_query(vectorstore, query: str) -> str:
 
         # Initialize the model
         try:
-            model = pipeline(
-                "text-generation",
-                model="TinyLlama/TinyLlama-1.1B-Chat-v1.0",
-                device="cpu",
-                max_length=2000
-            )
-            llm = HuggingFacePipeline(pipeline=model)
+            generator = pipeline('text-generation', model='facebook/opt-125m')
+            response = generator(query, max_length=100, num_return_sequences=1)[0]['generated_text']
+            return response
         except Exception as model_error:
             print(f"Error loading model: {str(model_error)}", file=sys.stderr)
             return "I'm having trouble initializing. Please try again in a moment."
