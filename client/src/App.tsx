@@ -6,7 +6,7 @@ import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Auth from "@/pages/Auth";
-import { Chatbot } from "@/components/ui/chatbot/Chatbot";
+
 import Dashboard from "@/pages/Dashboard";
 import ClientDashboard from "@/pages/ClientDashboard";
 import NewGoal from "@/pages/NewGoal";
@@ -38,7 +38,6 @@ function App() {
       <AuthProvider>
         <Router />
         <Toaster />
-        <Chatbot className="!left-4 !right-auto" />
       </AuthProvider>
     </QueryClientProvider>
   );
