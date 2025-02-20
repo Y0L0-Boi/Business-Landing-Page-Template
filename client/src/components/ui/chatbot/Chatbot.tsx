@@ -10,7 +10,7 @@ interface Message {
   isUser: boolean;
 }
 
-export function Chatbot() {
+export function Chatbot({ className }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -123,7 +123,7 @@ export function Chatbot() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className={`fixed bottom-4 right-4 z-50 ${className || ''}`}>
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
