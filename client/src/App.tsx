@@ -25,6 +25,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/auth" component={Auth} />
       <ProtectedRoute path="/dashboard" component={Dashboard} />
+      <ProtectedRoute path="/clients/new" component={NewClient} />
       <ProtectedRoute path="/clients/:id" component={ClientDashboard} />
       <ProtectedRoute path="/clients/:id/goals/new" component={NewGoal} />
       <Route component={NotFound} />
