@@ -1,4 +1,3 @@
-
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -19,9 +18,15 @@ import { useToast } from "@/hooks/use-toast";
 
 const clientFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  age: z.string().min(1, "Age is required"),
+  age: z.string().min(1, "Age is required").refine((value) => {
+    const num = Number(value);
+    return !isNaN(num) && num > 0;
+  }, "Age must be a valid number"),
   panNumber: z.string().min(10, "Valid PAN number is required"),
-  riskAppetite: z.string().min(1, "Risk appetite is required"),
+  riskAppetite: z.string().min(0, "Risk appetite is required").refine((value) => {
+    const num = Number(value);
+    return !isNaN(num) && num >= 0 && num <= 10;
+  }, "Risk Appetite must be a number between 0 and 10"),
   profession: z.string().min(1, "Profession is required"),
 });
 
@@ -60,6 +65,7 @@ export default function NewClient() {
       });
 
       if (!response.ok) {
+        console.log(response)
         throw new Error("Failed to create client");
       }
 
@@ -68,11 +74,11 @@ export default function NewClient() {
         description: "Client registered successfully",
       });
       setLocation("/dashboard");
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error submitting form:", error);
       toast({
         title: "Error",
-        description: "Failed to register client. Please try again.",
+        description: error.message || "Failed to register client. Please try again.",
       });
     }
   };

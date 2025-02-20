@@ -10,6 +10,8 @@ import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
 import ClientDashboard from "@/pages/ClientDashboard";
 import NewGoal from "@/pages/NewGoal";
+import NewClient from "@/pages/NewClient"; // Import the NewClient component
+const ClientDetails = () => <div>Client Details Page</div>;
 
 function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType<any>, [key: string]: any }) {
   const { user } = useAuth();
@@ -25,9 +27,12 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/auth" component={Auth} />
       <ProtectedRoute path="/dashboard" component={Dashboard} />
-      <ProtectedRoute path="/clients/new" component={NewClient} />
+      <ProtectedRoute path="/clients/new" component={NewClient} /> {/* Render the NewClient component at /clients/new */}
       <ProtectedRoute path="/clients/:id" component={ClientDashboard} />
       <ProtectedRoute path="/clients/:id/goals/new" component={NewGoal} />
+      <Route path="/clients/:id">
+        <ClientDetails />
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
