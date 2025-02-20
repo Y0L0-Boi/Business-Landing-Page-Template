@@ -7,8 +7,9 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chains import RetrievalQA
-from langchain.llms import LlamaCpp
+from langchain.llms import HuggingFacePipeline
 import os
+from transformers import pipeline
 
 def load_knowledge_base():
     # Initialize document storage
@@ -42,16 +43,15 @@ def process_query(vectorstore, query: str) -> str:
         if not query.strip():
             return "Please provide a question about mutual funds or financial topics."
 
-        # Initialize Llama with error handling
+        # Initialize the model
         try:
-            llm = LlamaCpp(
-                model_path="./llama-2-7b-chat.gguf",
-                temperature=0.7,
-                max_tokens=2000,
-                n_ctx=2048,
-                n_threads=4,
-                verbose=True
+            model = pipeline(
+                "text-generation",
+                model="TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+                device="cpu",
+                max_length=2000
             )
+            llm = HuggingFacePipeline(pipeline=model)
         except Exception as model_error:
             print(f"Error loading model: {str(model_error)}", file=sys.stderr)
             return "I'm having trouble initializing. Please try again in a moment."
