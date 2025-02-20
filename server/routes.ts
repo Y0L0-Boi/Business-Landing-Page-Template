@@ -20,6 +20,21 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  app.post("/api/clients", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+
+    try {
+      const newClient = await storage.createClient({
+        ...req.body,
+        userId: req.user.id,
+        createdAt: new Date(),
+      });
+      res.json(newClient);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create client" });
+    }
+  });
+
   app.get("/api/portfolio/summary", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
 

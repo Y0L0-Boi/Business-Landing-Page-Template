@@ -117,6 +117,22 @@ export class MemStorage implements IStorage {
     }
   }
 
+  async createClient(clientData: Partial<Client>): Promise<Client> {
+    try {
+      const newId = Math.max(...Array.from(this.clients.keys())) + 1;
+      const newClient: Client = {
+        id: newId,
+        ...clientData,
+      } as Client;
+      
+      this.clients.set(newId, newClient);
+      return newClient;
+    } catch (error) {
+      console.error("Error creating client:", error);
+      throw error;
+    }
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     try {
       const id = this.currentId++;
