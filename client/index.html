@@ -1,14 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8" /> <!-- Specifies the character encoding for the HTML document -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Sets the viewport to make the website responsive -->
     <script>
-      (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="Hv1ll7elEdSoyYpG6lLgd";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+      (function() { // Self-executing anonymous function to avoid polluting the global namespace
+        if (!window.chatbase || window.chatbase("getState") !== "initialized") { // Check if Chatbase is already initialized
+          window.chatbase = (...arguments) => { // Define the chatbase function
+            if (!window.chatbase.q) { // If the queue doesn't exist, create it
+              window.chatbase.q = []; // Initialize the queue
+            }
+            window.chatbase.q.push(arguments); // Push the arguments to the queue
+          };
+          window.chatbase = new Proxy(window.chatbase, { // Create a proxy for the chatbase function
+            get(target, prop) { // Intercept property accesses
+              if (prop === "q") { // If the property is "q", return the queue
+                return target.q;
+              }
+              return (...args) => target(prop, ...args); // Otherwise, call the chatbase function with the property and arguments
+            }
+          });
+        }
+        const onLoad = function() { // Define the onLoad function
+          const script = document.createElement("script"); // Create a new script element
+          script.src = "https://www.chatbase.co/embed.min.js"; // Set the source of the script to the Chatbase embed script
+          script.id = "Hv1ll7elEdSoyYpG6lLgd"; // Set the ID of the script element
+          script.domain = "www.chatbase.co"; // Set the domain of the script element
+          document.body.appendChild(script); // Append the script element to the body
+        };
+        if (document.readyState === "complete") { // Check if the document is already fully loaded
+          onLoad(); // If it is, call the onLoad function immediately
+        } else {
+          window.addEventListener("load", onLoad); // Otherwise, wait for the window's load event to call the onLoad function
+        }
+      })();
     </script>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div id="root"></div> <!-- This is the root element where the React application will be mounted -->
+    <script type="module" src="/src/main.tsx"></script> <!-- Load the main entry point of the React application -->
   </body>
 </html>
