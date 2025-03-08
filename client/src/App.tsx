@@ -50,16 +50,16 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} /> // Route for the home page
-      <Route path="/auth" component={Auth} /> // Route for the authentication page
-      <ProtectedRoute path="/dashboard" component={Dashboard} /> // Protected route for the dashboard
-      <ProtectedRoute path="/clients/new" component={NewClient} /> // Protected route for creating new clients
-      <ProtectedRoute path="/clients/:id" component={ClientDashboard} /> // Protected route for displaying client details
-      <ProtectedRoute path="/clients/:id/goals/new" component={NewGoal} /> // Protected route for creating new goals
+      <Route path="/" component={Home} /> {/* Route for the home page */}
+      <Route path="/auth" component={Auth} /> {/* Route for the authentication page */}
+      <ProtectedRoute path="/dashboard" component={Dashboard} /> {/* Protected route for the dashboard */}
+      <ProtectedRoute path="/clients/new" component={NewClient} /> {/* Protected route for creating new clients */}
+      <ProtectedRoute path="/clients/:id" component={ClientDashboard} /> {/* Protected route for displaying client details */}
+      <ProtectedRoute path="/clients/:id/goals/new" component={NewGoal} /> {/* Protected route for creating new goals */}
       <Route path="/clients/:id">
-        <ClientDetails /> // Route for displaying client details
+        <ClientDetails /> {/* Route for displaying client details */}
       </Route>
-      <Route component={NotFound} /> // Route for handling 404 errors
+      <Route component={NotFound} /> {/* Route for handling 404 errors */}
     </Switch>
   );
 }
@@ -67,10 +67,10 @@ function Router() {
 // Define the main App component
 function App() {
   return (
-    <QueryClientProvider client={queryClient}> // Provide the query client to the app
-      <AuthProvider> // Provide the authentication context to the app
-        <Router /> // Render the Router component
-        <Toaster /> // Render the Toaster component for displaying toast notifications
+    <QueryClientProvider client={queryClient}> {/* Provide the query client to the app */}
+      <AuthProvider> {/* Provide the authentication context to the app */}
+        <Router /> {/* Render the Router component */}
+        <Toaster /> {/* Render the Toaster component for displaying toast notifications */}
       </AuthProvider>
     </QueryClientProvider>
   );
