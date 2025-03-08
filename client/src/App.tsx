@@ -47,20 +47,28 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
 }
 
 // Define the Router component to handle the application's routing
+// Import the Navbar component
+import { Navbar } from "@/components/Navbar";
+
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={Home} /> {/* Route for the home page */}
-      <Route path="/auth" component={Auth} /> {/* Route for the authentication page */}
-      <ProtectedRoute path="/dashboard" component={Dashboard} /> {/* Protected route for the dashboard */}
-      <ProtectedRoute path="/clients/new" component={NewClient} /> {/* Protected route for creating new clients */}
-      <ProtectedRoute path="/clients/:id" component={ClientDashboard} /> {/* Protected route for displaying client details */}
-      <ProtectedRoute path="/clients/:id/goals/new" component={NewGoal} /> {/* Protected route for creating new goals */}
-      <Route path="/clients/:id">
-        <ClientDetails /> {/* Route for displaying client details */}
-      </Route>
-      <Route component={NotFound} /> {/* Route for handling 404 errors */}
-    </Switch>
+    <div className="min-h-screen flex flex-col">
+      <Navbar /> {/* Add the navbar at the top of all pages */}
+      <main className="flex-1">
+        <Switch>
+          <Route path="/" component={Home} /> {/* Route for the home page */}
+          <Route path="/auth" component={Auth} /> {/* Route for the authentication page */}
+          <ProtectedRoute path="/dashboard" component={Dashboard} /> {/* Protected route for the dashboard */}
+          <ProtectedRoute path="/clients/new" component={NewClient} /> {/* Protected route for creating new clients */}
+          <ProtectedRoute path="/clients/:id" component={ClientDashboard} /> {/* Protected route for displaying client details */}
+          <ProtectedRoute path="/clients/:id/goals/new" component={NewGoal} /> {/* Protected route for creating new goals */}
+          <Route path="/clients/:id">
+            <ClientDetails /> {/* Route for displaying client details */}
+          </Route>
+          <Route component={NotFound} /> {/* Route for handling 404 errors */}
+        </Switch>
+      </main>
+    </div>
   );
 }
 
