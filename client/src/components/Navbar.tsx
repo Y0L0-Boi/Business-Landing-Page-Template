@@ -47,7 +47,7 @@ export function Navbar() {
           {user ? (
             <>
               <span className="text-sm text-gray-300">
-                {user.name}
+                {user?.username || "User"}
               </span>
               <Button 
                 variant="outline" 

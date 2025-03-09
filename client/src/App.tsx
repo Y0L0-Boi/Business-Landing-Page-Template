@@ -42,11 +42,20 @@ const ClientDetails = () => <div>Client Details Page</div>;
 
 // Define a ProtectedRoute component to handle routes that require authentication
 function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType<any>, [key: string]: any }) {
-  const { user } = useAuth(); // Get the current user from the authentication context
+  const { user, isLoading } = useAuth(); // Get the current user and loading state from the authentication context
   const isAuthenticated = Boolean(user); // Check if the user is authenticated
-  return (
-    <Route {...rest} component={() => isAuthenticated ? <Component /> : <></>} /> // Render the component if authenticated, otherwise render nothing
-  );
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
+  
+  if (!isAuthenticated) {
+    // Redirect to auth page if not authenticated
+    window.location.href = '/auth';
+    return null;
+  }
+  
+  return <Component {...rest} />; // Render the component if authenticated
 }
 
 // Define the Router component to handle the application's routing
