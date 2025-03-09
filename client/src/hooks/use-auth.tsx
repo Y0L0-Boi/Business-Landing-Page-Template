@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 // Define User type based on the schema 
@@ -25,16 +24,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUser = async () => {
     try {
-      const response = await fetch("/api/user", { credentials: "include" });
+      setIsLoading(true);
+      const response = await fetch("/api/user", { 
+        credentials: "include",
+        headers: {
+          "Cache-Control": "no-cache"
+        }
+      });
       if (!response.ok) {
         setUser(null);
-        return;
+        return null;
       }
       const userData = await response.json();
       setUser(userData);
+      return userData;
     } catch (error) {
       console.error("Error fetching user:", error);
       setUser(null);
+      return null;
     } finally {
       setIsLoading(false);
     }

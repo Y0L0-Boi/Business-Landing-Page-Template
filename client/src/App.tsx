@@ -44,14 +44,21 @@ const ClientDetails = () => <div>Client Details Page</div>;
 function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType<any>, [key: string]: any }) {
   const { user, isLoading } = useAuth(); // Get the current user and loading state from the authentication context
   const isAuthenticated = Boolean(user); // Check if the user is authenticated
+  const [, navigate] = useLocation();
+  
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      navigate('/auth');
+    }
+  }, [isLoading, isAuthenticated, navigate]);
   
   if (isLoading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    return <div className="flex items-center justify-center h-screen">
+      <div className="animate-spin h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
+    </div>;
   }
   
   if (!isAuthenticated) {
-    // Redirect to auth page if not authenticated
-    window.location.href = '/auth';
     return null;
   }
   
