@@ -122,7 +122,6 @@ export default function Auth() {
                   <Button
                     type="submit"
                     className="w-full bg-blue-500 hover:bg-blue-600"
-                    disabled={loginMutation.isPending || registerMutation.isPending}
                   >
                     {isLogin ? (
                       <><LogIn className="mr-2 h-4 w-4" /> Login</>
