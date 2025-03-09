@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
@@ -29,13 +28,13 @@ export default function ClientList() {
     queryKey: ["/api/clients"],
     queryFn: async () => {
       const response = await fetch("/api/clients", {
-        credentials: "include" // Add this to include cookies/session
+        credentials: "include", // Add this to include cookies/session
       });
       if (!response.ok) {
         throw new Error("Failed to fetch clients");
       }
       return await response.json();
-    }
+    },
   });
 
   if (isLoading) {
@@ -50,7 +49,7 @@ export default function ClientList() {
     <div className="min-h-screen bg-gradient-to-b from-blue-900 to-black p-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-white">Clients</h1>
-        <Button 
+        <Button
           className="bg-blue-500 hover:bg-blue-600"
           onClick={() => setLocation("/clients/new")}
         >
@@ -87,7 +86,9 @@ export default function ClientList() {
                   <TableCell className="text-gray-300">
                     {Indian.format(client.portfolioValue)}
                   </TableCell>
-                  <TableCell className="text-gray-300">{client.fundCount}</TableCell>
+                  <TableCell className="text-gray-300">
+                    {client.fundCount}
+                  </TableCell>
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
