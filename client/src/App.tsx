@@ -1,5 +1,5 @@
-// Import Switch and Route components from wouter for routing
-import { Switch, Route } from "wouter";
+// Import Switch, Route, and useLocation components from wouter for routing
+import { Switch, Route, useLocation } from "wouter";
 
 // Import the queryClient instance from the queryClient file
 import { queryClient } from "./lib/queryClient";
