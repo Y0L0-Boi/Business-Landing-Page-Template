@@ -28,42 +28,11 @@ export default function ClientList() {
   const { data: clients, isLoading } = useQuery({
     queryKey: ["/api/clients"],
     queryFn: async () => {
-      // This would normally fetch from your API
-      // For now using sample data similar to Dashboard
-      return [
-        {
-          id: 1,
-          name: "Ramesh Kumar",
-          email: "ramesh@example.com",
-          kycStatus: true,
-          portfolioValue: 6700000,
-          fundCount: 4
-        },
-        {
-          id: 2,
-          name: "Suresh Patel",
-          email: "suresh@example.com",
-          kycStatus: false,
-          portfolioValue: 4300000,
-          fundCount: 3
-        },
-        {
-          id: 3,
-          name: "Anita Sharma",
-          email: "anita@example.com",
-          kycStatus: true,
-          portfolioValue: 8200000,
-          fundCount: 5
-        },
-        {
-          id: 4,
-          name: "Raj Malhotra",
-          email: "raj@example.com",
-          kycStatus: true,
-          portfolioValue: 3100000,
-          fundCount: 2
-        }
-      ];
+      const response = await fetch("/api/clients");
+      if (!response.ok) {
+        throw new Error("Failed to fetch clients");
+      }
+      return await response.json();
     }
   });
 

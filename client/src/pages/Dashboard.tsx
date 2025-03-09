@@ -41,28 +41,19 @@ type PortfolioSummary = {
 export default function Dashboard() {
   const [, setLocation] = useLocation();
 
-  // For demonstration, using static data for clients.
-  // Removed initialData option so that the queryFn's result updates the data.
-  const { data: clients, isLoading: isLoadingClients } = useQuery<ClientWithPortfolio[]>({
+  // Fetch clients data
+  const { data: clients, isLoading: isLoadingClients } = useQuery({
     queryKey: ["/api/clients"],
-    queryFn: () =>
-      Promise.resolve([
-        {
-          id: 1,
-          name: "Ramesh Kumar",
-          userId: null,
-          email: "ramesh@example.com",
-          phone: "+91 98765 43212",
-          panNumber: "LMNOP7890Q",
-          kycStatus: true,
-          createdAt: null,
-          portfolioValue: 6700000,
-          fundCount: 6,
-        },
-      ]),
+    queryFn: async () => {
+      const response = await fetch("/api/clients");
+      if (!response.ok) {
+        throw new Error("Failed to fetch clients");
+      }
+      return await response.json();
+    }
   });
 
-  // For demonstration, using static data for portfolio summary
+  // For demonstration, using static data for portfolio summary.  This should also be fetched from the API.
   const { data: portfolioSummary, isLoading: isLoadingSummary } = useQuery<PortfolioSummary>({
     queryKey: ["/api/portfolio/summary"],
     queryFn: () =>

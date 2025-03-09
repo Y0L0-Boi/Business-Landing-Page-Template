@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query"; // Added import for react-query
 
 const clientFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -35,6 +36,7 @@ type ClientFormData = z.infer<typeof clientFormSchema>;
 export default function NewClient() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const queryClient = useQueryClient(); // Added to use react-query
 
   const form = useForm<ClientFormData>({
     resolver: zodResolver(clientFormSchema),
@@ -68,6 +70,8 @@ export default function NewClient() {
         console.log(response)
         throw new Error("Failed to create client");
       }
+
+      queryClient.invalidateQueries({ queryKey: ["/api/clients"] }); //Invalidate queries here
 
       toast({
         title: "Success",
