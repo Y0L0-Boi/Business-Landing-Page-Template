@@ -1,32 +1,42 @@
+
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { LogIn, UserPlus, TrendingUp, Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { TrendingUp, Users, Shield, LogIn, Loader2 } from "lucide-react";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import WavePattern from "@/components/ui/patterns/WavePattern";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 
 const authSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  username: z.string().min(3, {
+    message: "Username must be at least 3 characters.",
+  }),
+  password: z.string().min(6, {
+    message: "Password must be at least 6 characters.",
+  }),
 });
-
-type AuthFormData = z.infer<typeof authSchema>;
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { login, register } = useAuth();
   const { toast } = useToast();
-  const { login } = useAuth();
   const [, setLocation] = useLocation();
 
-  const form = useForm<AuthFormData>({
+  const form = useForm<z.infer<typeof authSchema>>({
     resolver: zodResolver(authSchema),
     defaultValues: {
       username: "",
@@ -34,32 +44,55 @@ export default function Auth() {
     },
   });
 
-  const onSubmit = async (data: AuthFormData) => {
+  const onSubmit = async (values: z.infer<typeof authSchema>) => {
+    setIsSubmitting(true);
     try {
       if (isLogin) {
-        await login(data.username, data.password);
+        await login(values.username, values.password);
+        toast({
+          title: "Success",
+          description: "You have been logged in successfully.",
+        });
         setLocation("/dashboard");
       } else {
-        // For now, show a message that registration isn't implemented in this version
-        toast({
-          title: "Registration",
-          description: "Registration is not implemented in this version. Please use login.",
+        // Register functionality
+        const response = await fetch("/api/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: values.username,
+            password: values.password,
+          }),
         });
+
+        if (!response.ok) {
+          throw new Error(
+            `Registration failed: ${response.status} ${response.statusText}`
+          );
+        }
+
+        toast({
+          title: "Success",
+          description: "Account created successfully. You can now log in.",
+        });
+        setIsLogin(true); // Switch to login form after successful registration
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Auth error:", error);
       toast({
         title: "Error",
-        description: isLogin ? "Login failed. Please check your credentials." : "Registration failed. Please try again.",
-        variant: "destructive"
+        description: error.message || "Authentication failed",
+        variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-900 to-black relative overflow-hidden">
-      <WavePattern className="opacity-30" />
-
+    <div className="min-h-screen bg-gradient-to-b from-blue-900 to-black">
       <div className="container mx-auto px-6 py-8 relative">
         <div className="grid md:grid-cols-2 gap-12 items-center min-h-[calc(100vh-4rem)]">
           {/* Form Section */}
@@ -119,14 +152,21 @@ export default function Auth() {
                     )}
                   />
 
-                  <Button
-                    type="submit"
+                  <Button 
+                    type="submit" 
                     className="w-full bg-blue-500 hover:bg-blue-600"
+                    disabled={isSubmitting}
                   >
-                    {isLogin ? (
-                      <><LogIn className="mr-2 h-4 w-4" /> Login</>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {isLogin ? "Logging in..." : "Creating account..."}
+                      </>
                     ) : (
-                      <><UserPlus className="mr-2 h-4 w-4" /> Register</>
+                      <>
+                        <LogIn className="mr-2 h-4 w-4" />
+                        {isLogin ? "Login" : "Create Account"}
+                      </>
                     )}
                   </Button>
                 </form>
@@ -173,11 +213,21 @@ export default function Auth() {
               </div>
 
               <div className="flex items-start space-x-4">
+                <Users className="w-8 h-8 text-blue-400 mt-1" />
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Client Management</h3>
+                  <p className="text-gray-300">
+                    Maintain a comprehensive database of all your clients
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
                 <Shield className="w-8 h-8 text-blue-400 mt-1" />
                 <div>
-                  <h3 className="text-xl font-semibold mb-2">Compliance Ready</h3>
+                  <h3 className="text-xl font-semibold mb-2">Secure & Compliant</h3>
                   <p className="text-gray-300">
-                    Stay compliant with all SEBI regulations and requirements
+                    Built with industry-standard security and regulatory compliance
                   </p>
                 </div>
               </div>

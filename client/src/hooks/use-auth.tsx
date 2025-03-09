@@ -16,6 +16,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUser = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch("/api/user", { credentials: "include" });
       if (!response.ok) {
         setUser(null); // Clear user if fetch fails
@@ -26,12 +27,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Error fetching user:", error);
       setUser(null); // Clear user on error
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchUser();
-    setIsLoading(false);
   }, []);
 
   const login = async (username: string, password: string) => {
@@ -52,9 +54,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const userData = await response.json();
       setUser(userData);
-
-      // Immediately verify the session is active
-      await fetchUser();
 
       return userData;
     } catch (error) {
