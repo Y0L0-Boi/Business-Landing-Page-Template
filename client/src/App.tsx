@@ -52,10 +52,12 @@ import { Navbar } from "@/components/Navbar";
 
 function Router() {
   const { user } = useAuth();
+  const [location] = useLocation();
+  const isHomePage = location === "/";
 
   return (
     <div className="min-h-screen">
-      {user && <Navbar />}
+      {user && !isHomePage && <Navbar />}
       <main>
         <Switch>
           <Route path="/" component={Home} /> {/* Route for the home page */}
