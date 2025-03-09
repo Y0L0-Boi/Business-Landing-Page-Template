@@ -51,10 +51,12 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
 import { Navbar } from "@/components/Navbar";
 
 function Router() {
+  const { user } = useAuth();
+
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar /> {/* Add the navbar at the top of all pages */}
-      <main className="flex-1">
+    <div className="min-h-screen">
+      {user && <Navbar />}
+      <main>
         <Switch>
           <Route path="/" component={Home} /> {/* Route for the home page */}
           <Route path="/auth" component={Auth} /> {/* Route for the authentication page */}
