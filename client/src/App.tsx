@@ -41,6 +41,8 @@ import ClientList from "@/pages/ClientList"; // Placeholder - needs to be create
 const ClientDetails = () => <div>Client Details Page</div>;
 
 // Define a ProtectedRoute component to handle routes that require authentication
+import React, { useEffect } from "react";
+
 function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType<any>, [key: string]: any }) {
   const { user, isLoading } = useAuth(); // Get the current user and loading state from the authentication context
   const isAuthenticated = Boolean(user); // Check if the user is authenticated
