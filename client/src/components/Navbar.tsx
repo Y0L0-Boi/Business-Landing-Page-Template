@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -34,6 +33,12 @@ export function Navbar() {
                     New Client
                   </Link>
                 </li>
+                {/* Added a link for the client list page */}
+                <li>
+                  <Link href="/clients" className="text-sm font-medium transition-colors hover:text-primary">
+                    Clients
+                  </Link>
+                </li>
               </>
             ) : null}
           </ul>
@@ -41,27 +46,28 @@ export function Navbar() {
         <div className="flex items-center gap-4">
           {user ? (
             <>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-gray-300">
                 {user.name}
               </span>
               <Button 
-  variant="outline" 
-  size="sm" 
-  onClick={() => {
-    logoutMutation.mutate(undefined, {
-      onSuccess: () => {
-        setLocation('/auth', { replace: true });
-      }
-    });
-  }}
-  disabled={logoutMutation.isPending}
->
-  {logoutMutation.isPending ? 'Logging out...' : 'Logout'}
-</Button>
+                variant="outline" 
+                size="sm"
+                className="border-blue-500 text-blue-400 hover:bg-blue-900/30"
+                onClick={() => {
+                  logoutMutation.mutate(undefined, {
+                    onSuccess: () => {
+                      setLocation('/auth', { replace: true });
+                    }
+                  });
+                }}
+                disabled={logoutMutation.isPending}
+              >
+                {logoutMutation.isPending ? 'Logging out...' : 'Logout'}
+              </Button>
             </>
           ) : (
             <Link href="/auth">
-                <Button size="sm">Login</Button>
+              <Button size="sm" className="bg-blue-500 hover:bg-blue-600">Login</Button>
             </Link>
           )}
         </div>

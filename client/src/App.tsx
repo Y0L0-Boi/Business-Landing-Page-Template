@@ -34,6 +34,9 @@ import NewGoal from "@/pages/NewGoal";
 // Import NewClient component for creating new clients
 import NewClient from "@/pages/NewClient"; // Import the NewClient component
 
+// Import ClientList component (needs to be created)
+import ClientList from "@/pages/ClientList"; // Placeholder - needs to be created
+
 // Define a simple ClientDetails component for displaying client details
 const ClientDetails = () => <div>Client Details Page</div>;
 
@@ -57,12 +60,13 @@ function Router() {
 
   return (
     <div className="min-h-screen">
-      {user && !isHomePage && <Navbar />}
+      {user && !isHomePage && <Navbar />} {/* Placeholder: Navbar styling and ClientList button need to be added here */}
       <main>
         <Switch>
           <Route path="/" component={Home} /> {/* Route for the home page */}
           <Route path="/auth" component={Auth} /> {/* Route for the authentication page */}
           <ProtectedRoute path="/dashboard" component={Dashboard} /> {/* Protected route for the dashboard */}
+          <Route path="/clients" component={ClientList} /> {/* Route for clients list */}
           <ProtectedRoute path="/clients/new" component={NewClient} /> {/* Protected route for creating new clients */}
           <ProtectedRoute path="/clients/:id" component={ClientDashboard} /> {/* Protected route for displaying client details */}
           <ProtectedRoute path="/clients/:id/goals/new" component={NewGoal} /> {/* Protected route for creating new goals */}
