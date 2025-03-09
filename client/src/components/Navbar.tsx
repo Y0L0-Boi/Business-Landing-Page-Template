@@ -1,10 +1,11 @@
 
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 
 export function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logoutMutation } = useAuth();
+  const [, setLocation] = useLocation();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
@@ -51,9 +52,20 @@ export function Navbar() {
               <span className="text-sm text-muted-foreground">
                 {user.name}
               </span>
-              <Button variant="outline" size="sm" onClick={logout}>
-                Logout
-              </Button>
+              <Button 
+  variant="outline" 
+  size="sm" 
+  onClick={() => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        setLocation('/auth', { replace: true });
+      }
+    });
+  }}
+  disabled={logoutMutation.isPending}
+>
+  {logoutMutation.isPending ? 'Logging out...' : 'Logout'}
+</Button>
             </>
           ) : (
             <Link href="/auth">
