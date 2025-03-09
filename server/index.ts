@@ -20,6 +20,11 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Set-Cookie, Cookie');
   res.header('Access-Control-Expose-Headers', 'Set-Cookie');
   
+  // Log auth related headers for debugging
+  if (req.path.startsWith('/api/')) {
+    console.log(`${req.method} ${req.path} - Auth cookie present:`, Boolean(req.cookies['connect.sid']));
+  }
+  
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
   }

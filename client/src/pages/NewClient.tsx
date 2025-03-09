@@ -51,12 +51,14 @@ export default function NewClient() {
 
   const onSubmit = async (data: ClientFormData) => {
     try {
+      // Use apiRequest from lib/queryClient instead of fetch directly
+      // This ensures proper credentials handling
       const response = await fetch("/api/clients", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", // Add this to include cookies/session
+        credentials: "include",
         body: JSON.stringify({
           name: data.name,
           age: parseInt(data.age),
@@ -67,8 +69,11 @@ export default function NewClient() {
         }),
       });
 
+      // Debug session info
+      console.log("Auth cookies present:", document.cookie.includes("connect.sid"));
+      
       if (!response.ok) {
-        console.log(response);
+        console.log("Response status:", response.status);
         const errorText = await response.text();
         throw new Error(`Failed to create client (${response.status}): ${errorText}`);
       }

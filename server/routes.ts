@@ -21,7 +21,12 @@ export function registerRoutes(app: Express): Server {
   });
 
   app.post("/api/clients", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
+    console.log("POST /api/clients - Auth status:", req.isAuthenticated());
+    
+    if (!req.isAuthenticated()) {
+      console.log("User not authenticated, sending 401");
+      return res.status(401).send("Unauthorized - Please login first");
+    }
 
     try {
       const newClient = await storage.createClient({
@@ -31,7 +36,8 @@ export function registerRoutes(app: Express): Server {
       });
       res.json(newClient);
     } catch (error) {
-      res.status(500).json({ message: "Failed to create client" });
+      console.error("Error creating client:", error);
+      res.status(500).json({ message: "Failed to create client", error: String(error) });
     }
   });
 

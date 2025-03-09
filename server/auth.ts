@@ -31,8 +31,8 @@ async function comparePasswords(supplied: string, stored: string) {
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
     secret: "your-secret-key",
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     rolling: true,
     name: 'connect.sid',
     cookie: {
@@ -48,6 +48,14 @@ export function setupAuth(app: Express) {
   app.use(session(sessionSettings));
   app.use(passport.initialize());
   app.use(passport.session());
+  
+  // Add middleware to log authentication status for debugging
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api/')) {
+      console.log(`Auth middleware - ${req.method} ${req.path} - User authenticated:`, req.isAuthenticated());
+    }
+    next();
+  });
 
   passport.use(
     new LocalStrategy(async (username, password, done) => {
