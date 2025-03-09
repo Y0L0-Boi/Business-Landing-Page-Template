@@ -45,20 +45,26 @@ export default function Auth() {
     setIsSubmitting(true);
     try {
       if (isLogin) {
-        await login(values.username, values.password);
-        toast({
-          title: "Success",
-          description: "You have been logged in successfully.",
-        });
-        setLocation("/dashboard");
+        const userData = await login(values.username, values.password);
+        if (userData) {
+          toast({
+            title: "Success",
+            description: "You have been logged in successfully.",
+          });
+          // Force redirect to dashboard
+          window.location.href = "/dashboard";
+        }
       } else {
         // Register functionality
-        await register(values.username, values.password);
-        toast({
-          title: "Success",
-          description: "Account created successfully! You are now logged in.",
-        });
-        setLocation("/dashboard");
+        const userData = await register(values.username, values.password);
+        if (userData) {
+          toast({
+            title: "Success",
+            description: "Account created successfully! You are now logged in.",
+          });
+          // Force redirect to dashboard
+          window.location.href = "/dashboard";
+        }
       }
     } catch (error: any) {
       toast({

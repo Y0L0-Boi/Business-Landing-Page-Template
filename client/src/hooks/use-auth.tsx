@@ -63,15 +63,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Login failed: ${errorText}`);
+        throw new Error("Login failed. Please check your credentials.");
       }
 
-      const userData = await response.json();
-      setUser(userData);
-      return userData;
+      const data = await response.json();
+      setUser(data);
+
+      // Make sure to fetch user again after login
+      await fetchUser();
+      return data;
     } catch (error) {
-      console.error("Auth error:", error);
+      console.error("Login error:", error);
       throw error;
     }
   };
