@@ -45,7 +45,9 @@ export default function Dashboard() {
   const { data: clients, isLoading: isLoadingClients } = useQuery({
     queryKey: ["/api/clients"],
     queryFn: async () => {
-      const response = await fetch("/api/clients");
+      const response = await fetch("/api/clients", {
+        credentials: "include" // Add this to include cookies/session
+      });
       if (!response.ok) {
         throw new Error("Failed to fetch clients");
       }

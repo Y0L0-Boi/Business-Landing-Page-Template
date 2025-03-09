@@ -56,6 +56,7 @@ export default function NewClient() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Add this to include cookies/session
         body: JSON.stringify({
           name: data.name,
           age: parseInt(data.age),
