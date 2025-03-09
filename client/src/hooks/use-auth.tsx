@@ -14,43 +14,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const fetchUser = async () => {
+    try {
+      const response = await fetch("/api/user", { credentials: "include" });
+      if (!response.ok) {
+        setUser(null); // Clear user if fetch fails
+        return;
+      }
+      const userData = await response.json();
+      setUser(userData);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      setUser(null); // Clear user on error
+    }
+  };
+
   useEffect(() => {
-    // Check if user is already logged in
-    fetch("/api/user", {
-      credentials: "include" // Add credentials to include cookies
-    })
-      .then((res) => {
-        if (res.ok) return res.json();
-        throw new Error("Not authenticated");
-      })
-      .then((userData) => setUser(userData))
-      .catch(() => {})
-      .finally(() => setIsLoading(false));
+    fetchUser();
+    setIsLoading(false);
   }, []);
 
   const login = async (username: string, password: string) => {
-    const response = await fetch("/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include", // Add credentials to include cookies
-      body: JSON.stringify({ username, password }),
-    });
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ username, password }),
+      });
 
-    if (!response.ok) {
-      throw new Error("Login failed");
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Login failed: ${errorText}`);
+      }
+
+      const userData = await response.json();
+      setUser(userData);
+
+      // Immediately verify the session is active
+      await fetchUser();
+
+      return userData;
+    } catch (error) {
+      console.error("Auth error:", error);
+      throw error;
     }
-
-    const userData = await response.json();
-    setUser(userData);
-    return userData;
   };
 
   const logout = async () => {
     const response = await fetch("/api/logout", {
       method: "POST",
-      credentials: "include" // Add credentials to include cookies
+      credentials: "include"
     });
 
     if (!response.ok) {

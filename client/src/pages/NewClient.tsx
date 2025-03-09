@@ -68,8 +68,9 @@ export default function NewClient() {
       });
 
       if (!response.ok) {
-        console.log(response)
-        throw new Error("Failed to create client");
+        console.log(response);
+        const errorText = await response.text();
+        throw new Error(`Failed to create client (${response.status}): ${errorText}`);
       }
 
       queryClient.invalidateQueries({ queryKey: ["/api/clients"] }); //Invalidate queries here
