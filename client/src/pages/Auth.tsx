@@ -23,7 +23,7 @@ type AuthFormData = z.infer<typeof authSchema>;
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const { toast } = useToast();
-  const { loginMutation, registerMutation } = useAuth();
+  const { login } = useAuth();
   const [, setLocation] = useLocation();
 
   const form = useForm<AuthFormData>({
@@ -37,11 +37,15 @@ export default function Auth() {
   const onSubmit = async (data: AuthFormData) => {
     try {
       if (isLogin) {
-        await loginMutation.mutateAsync(data);
+        await login(data.username, data.password);
+        setLocation("/dashboard");
       } else {
-        await registerMutation.mutateAsync(data);
+        // For now, show a message that registration isn't implemented in this version
+        toast({
+          title: "Registration",
+          description: "Registration is not implemented in this version. Please use login.",
+        });
       }
-      setLocation("/dashboard");
     } catch (error) {
       console.error("Auth error:", error);
       toast({

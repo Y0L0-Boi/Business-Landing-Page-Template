@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 
 export function Navbar() {
-  const { user, logoutMutation } = useAuth();
+  const { user, logout } = useAuth();
   const [, setLocation] = useLocation();
 
   return (
@@ -53,16 +53,16 @@ export function Navbar() {
                 variant="outline" 
                 size="sm"
                 className="border-blue-500 text-blue-400 hover:bg-blue-900/30"
-                onClick={() => {
-                  logoutMutation.mutate(undefined, {
-                    onSuccess: () => {
-                      setLocation('/auth', { replace: true });
-                    }
-                  });
+                onClick={async () => {
+                  try {
+                    await logout();
+                    setLocation('/auth', { replace: true });
+                  } catch (error) {
+                    console.error("Logout failed:", error);
+                  }
                 }}
-                disabled={logoutMutation.isPending}
               >
-                {logoutMutation.isPending ? 'Logging out...' : 'Logout'}
+                Logout
               </Button>
             </>
           ) : (
